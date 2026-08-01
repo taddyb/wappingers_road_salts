@@ -208,6 +208,27 @@ def _zone_patch(ax, xs, ys, pad, facecolor="yellow", alpha=0.28,
                             edgecolor=edgecolor, lw=2.0, zorder=zorder))
 
 
+def _zone_obb(ax, pts, pad, facecolor="yellow", alpha=0.28, edgecolor="red"):
+    """Draw a zone as a rotated rectangle (oriented bounding box) aligned with
+    the reach, matching the original hand-drawn figures. `pad` (metres) adds a
+    margin around the points on all sides."""
+    pts = np.asarray(pts, dtype=float)
+    c = pts.mean(axis=0)
+    if len(pts) >= 2:
+        _, _, vt = np.linalg.svd(pts - c)
+        u, v = vt[0], vt[1]
+    else:
+        u, v = np.array([1.0, 0.0]), np.array([0.0, 1.0])
+    p1 = (pts - c) @ u
+    p2 = (pts - c) @ v
+    a0, a1 = p1.min() - pad, p1.max() + pad
+    b0, b1 = p2.min() - pad, p2.max() + pad
+    corners = [c + a * u + b * v for a, b in
+               [(a0, b0), (a1, b0), (a1, b1), (a0, b1)]]
+    ax.add_patch(MplPolygon(corners, closed=True, facecolor=facecolor,
+                            alpha=alpha, edgecolor=edgecolor, lw=2.0, zorder=4))
+
+
 def _fault_line(ax, fault_pts, cx0, cy0, half):
     """Fit and draw a dashed fault line through this site's InFault points."""
     if len(fault_pts) < 2:
@@ -270,25 +291,16 @@ def draw_site(site, df, zframes, cstats):
     ec_all = site_pts["EC"].to_numpy(dtype=float)
     norm = Normalize(vmin=ec_all.min(), vmax=ec_all.max())
 
-    # highlighted zones. Buffer each hull generously, but cap the buffer to the
-    # gap to the nearest other zone so neighbours don't overlap (Site 3's zones
-    # are interleaved along the reach).
-    from scipy.spatial import cKDTree
+    # highlighted zones drawn as rotated rectangles (oriented along the reach),
+    # matching the original figures. Membership is the survey zone; the box is
+    # the oriented bounding box of its points plus a margin.
     zone_xy = {z: np.array([merc(lo, la) for lo, la
                in zip(zframes[z]["lon"], zframes[z]["lat"])]) for z in zones}
     centroids = {}
     for z in zones:
         pts_z = zone_xy[z]
-        others = [zone_xy[o] for o in zones if o != z]
-        if others:
-            dmin = cKDTree(np.vstack(others)).query(pts_z)[0].min()
-            pad = min(span * 0.14, 0.42 * dmin)
-        else:
-            pad = span * 0.14
-        xs, ys = pts_z[:, 0], pts_z[:, 1]
-        for rx, ry in _runs(xs, ys):
-            _zone_patch(ax, rx, ry, pad=pad)
-        centroids[z] = (xs.mean(), ys.mean())
+        _zone_obb(ax, pts_z, pad=span * 0.035)
+        centroids[z] = (pts_z[:, 0].mean(), pts_z[:, 1].mean())
 
     # zone labels (id + mean EC), splayed radially outward to avoid overlap
     for z in zones:
