@@ -270,14 +270,24 @@ def draw_site(site, df, zframes, cstats):
     ec_all = site_pts["EC"].to_numpy(dtype=float)
     norm = Normalize(vmin=ec_all.min(), vmax=ec_all.max())
 
-    # highlighted zones, labelled with the zone id and its mean EC
+    # highlighted zones. Buffer each hull generously, but cap the buffer to the
+    # gap to the nearest other zone so neighbours don't overlap (Site 3's zones
+    # are interleaved along the reach).
+    from scipy.spatial import cKDTree
+    zone_xy = {z: np.array([merc(lo, la) for lo, la
+               in zip(zframes[z]["lon"], zframes[z]["lat"])]) for z in zones}
     centroids = {}
     for z in zones:
-        fr = zframes[z]
-        xs, ys = zip(*[merc(lo, la) for lo, la in zip(fr["lon"], fr["lat"])])
-        xs, ys = np.array(xs), np.array(ys)
+        pts_z = zone_xy[z]
+        others = [zone_xy[o] for o in zones if o != z]
+        if others:
+            dmin = cKDTree(np.vstack(others)).query(pts_z)[0].min()
+            pad = min(span * 0.14, 0.42 * dmin)
+        else:
+            pad = span * 0.14
+        xs, ys = pts_z[:, 0], pts_z[:, 1]
         for rx, ry in _runs(xs, ys):
-            _zone_patch(ax, rx, ry, pad=span * 0.05)
+            _zone_patch(ax, rx, ry, pad=pad)
         centroids[z] = (xs.mean(), ys.mean())
 
     # zone labels (id + mean EC), splayed radially outward to avoid overlap
