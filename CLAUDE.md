@@ -22,7 +22,7 @@ pipeline in `src/` (see `src/README.md`). Set up with a venv at `.venv/`
 (gitignored) and the packages listed in `src/README.md`, then:
 
 - `.venv/bin/python src/stats.py` → corrected Table 1 (`figures/table1_corrected.tex`, `\input` by main.tex)
-- `.venv/bin/python src/figures.py` → `figures/chloride.png` (Fig 5) + `figures/zone_ec.png` (a stats figure, not yet used in the paper)
+- `.venv/bin/python src/figures.py` → `figures/chloride.png` (Fig 5, the Z→Z' chloride transect)
 - `.venv/bin/python src/maps.py` → `figures/overview.png` + `figures/site{1,2,3}.png` (Figs 1–4; fetches OSM basemap tiles, needs internet)
 
 Data lives in `data/` (`salinity-dataset.xlsx`, `chloride-dataset.xlsx`), copied

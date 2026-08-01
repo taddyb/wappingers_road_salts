@@ -15,7 +15,7 @@ python3 -m venv ../.venv
 
 ```bash
 ../.venv/bin/python stats.py     # corrected Table 1  -> figures/table1_corrected.tex
-../.venv/bin/python figures.py   # chloride transect + zone-EC significance figure
+../.venv/bin/python figures.py   # chloride transect (Fig 5)
 ../.venv/bin/python maps.py      # overview + three site maps (fetches OSM tiles)
 ```
 
@@ -27,7 +27,7 @@ python3 -m venv ../.venv
 |------|---------|
 | `wappingers.py` | Data loading, zone definitions, contrast list (shared by the others) |
 | `stats.py` | Welch two-sample $t$-tests (headline) + Student + Mann-Whitney; also reproduces the published Table 1 for a transparent before/after |
-| `figures.py` | Figure 5 (chloride) and the zone-EC significance figure |
+| `figures.py` | Figure 5 (chloride transect) |
 | `maps.py` | Figures 1-4 (regional overview + three site maps) |
 
 ## What was corrected vs. the original R scripts
