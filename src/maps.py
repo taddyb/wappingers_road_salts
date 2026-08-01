@@ -65,14 +65,26 @@ def add_basemap_safe(ax, zoom="auto"):
         print(f"  basemap fetch failed ({e!r}); leaving blank background")
 
 
-def add_scalebar(ax, x0, y0, length_m, lat):
-    """Scale bar of a given GROUND length, drawn in Web-Mercator units."""
+def add_scalebar(ax, length_m, lat):
+    """Clean scale bar (bar + end ticks + label) sized to the axis extent.
+
+    ``length_m`` is a ground distance; it is drawn in Web-Mercator units,
+    correcting for the projection's latitude stretch.
+    """
+    x0d, x1d = ax.get_xlim()
+    y0d, y1d = ax.get_ylim()
+    xr, yr = x1d - x0d, y1d - y0d
     w = length_m / math.cos(math.radians(lat))
-    ax.add_patch(plt.Rectangle((x0, y0), w, w * 0.04, color="black", zorder=6))
+    x0 = x0d + 0.06 * xr
+    y0 = y0d + 0.07 * yr
+    th = 0.010 * yr
+    ax.add_patch(plt.Rectangle((x0, y0), w, th, fc="black", ec="black", zorder=7))
+    for xx in (x0, x0 + w):  # end ticks
+        ax.plot([xx, xx], [y0, y0 + 2.2 * th], color="black", lw=1.1, zorder=7)
     label = f"{length_m/1000:g} km" if length_m >= 1000 else f"{length_m:g} m"
-    ax.text(x0 + w / 2, y0 + w * 0.06, label, ha="center", va="bottom",
-            fontsize=8, zorder=6,
-            bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.7))
+    ax.text(x0 + w / 2, y0 + 2.6 * th, label, ha="center", va="bottom",
+            fontsize=8, zorder=7,
+            bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.75))
 
 
 def north_arrow(ax):
@@ -230,8 +242,7 @@ def draw_site(site, df, zframes, welch):
 
 def _decorate(ax, fig, cx0, cy0, half, clat, norm, has_fault):
     """Add scale bar, north arrow, colour bar, and legend."""
-    add_scalebar(ax, cx0 - half * 0.92, cy0 - half * 0.9,
-                 _round_scale(half * math.cos(math.radians(clat))), clat)
+    add_scalebar(ax, _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(ax)
     ax.set_axis_off()
 
@@ -384,8 +395,7 @@ def draw_overview(df, zframes):
                      bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4",
                                alpha=0.9))
 
-    add_scalebar(axR, cx0 - half * 0.92, cy0 - half * 0.92,
-                 _round_scale(half * math.cos(math.radians(clat))), clat)
+    add_scalebar(axR, _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(axR)
     axR.set_axis_off()
     if faults:
