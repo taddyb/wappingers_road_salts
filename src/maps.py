@@ -261,21 +261,42 @@ def merc_inv(x, y):
 
 
 def load_budnik_faults():
-    """Load digitized Budnik Fig 3.10 fault polylines from CSV, if supplied.
+    """Load digitized Budnik Fig 3.10 fault polylines, if supplied.
 
-    Optional override: if ``data/faults_budnik2010.csv`` exists (columns
-    fault_id, lon, lat), those polylines are used verbatim. Otherwise the
-    overview faults are derived from the survey (see :func:`site_fault_lines`).
+    Looks for a QGIS-georeferenced fault layer, in order of preference:
+      1. ``data/faults_budnik2010.geojson`` -- LineString/MultiLineString in
+         WGS84 lon/lat (what QGIS "Export Features" produces).
+      2. ``data/faults_budnik2010.csv`` -- columns fault_id, lon, lat.
+    Returns {fault_id: [(lon, lat), ...]}. Empty if neither exists (the
+    overview then falls back to the survey-derived traces).
     """
-    path = DATA / "faults_budnik2010.csv"
-    if not path.exists():
-        return {}
-    faults = {}
-    with open(path) as fh:
-        for row in csv.DictReader(fh):
-            faults.setdefault(row["fault_id"], []).append(
-                (float(row["lon"]), float(row["lat"])))
-    return faults
+    gj = DATA / "faults_budnik2010.geojson"
+    if gj.exists():
+        import json
+
+        faults = {}
+        for i, feat in enumerate(json.load(open(gj)).get("features", [])):
+            geom = feat.get("geometry") or {}
+            t = geom.get("type")
+            if t == "LineString":
+                lines = [geom["coordinates"]]
+            elif t == "MultiLineString":
+                lines = geom["coordinates"]
+            else:
+                continue
+            for j, line in enumerate(lines):
+                faults[f"{i}_{j}"] = [(c[0], c[1]) for c in line]
+        return faults
+
+    csvp = DATA / "faults_budnik2010.csv"
+    if csvp.exists():
+        faults = {}
+        with open(csvp) as fh:
+            for row in csv.DictReader(fh):
+                faults.setdefault(row["fault_id"], []).append(
+                    (float(row["lon"]), float(row["lat"])))
+        return faults
+    return {}
 
 
 def site_fault_lines(df, zframes, extend_m=2600):
@@ -308,10 +329,14 @@ def site_fault_lines(df, zframes, extend_m=2600):
 
 
 def draw_overview(df, zframes):
-    """Regional overview (Figure 1): just the three site boxes + regional faults.
+    """Two-panel regional figure (Figure 1).
 
-    Deliberately simple -- no individual survey points or colour bar -- so the
-    reader can see where the sites sit relative to the mapped fault network.
+    Left  -- Budnik et al. (2010) Fig. 3.10, the source county fault map.
+    Right -- OpenStreetMap of the study area with the three site boxes and the
+             mapped high-angle faults. The right-panel faults come from the
+             QGIS-georeferenced Budnik layer if present
+             (``data/faults_budnik2010.geojson`` / ``.csv``); until that is
+             supplied they fall back to the survey-derived traces.
     """
     import pandas as pd
     pts = df.dropna(subset=["lat", "lon"])
@@ -321,45 +346,59 @@ def draw_overview(df, zframes):
     half = max(np.ptp(xs), np.ptp(ys)) * 0.62 + 1500
     clat = cy_to_lat(cy0)
 
-    fig, ax = plt.subplots(figsize=(6.0, 5.6))
-    ax.set_xlim(cx0 - half, cx0 + half)
-    ax.set_ylim(cy0 - half, cy0 + half)
-    ax.set_aspect("equal")
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.5, 5.6),
+                                   gridspec_kw={"width_ratios": [1, 1.15]})
 
-    add_basemap_safe(ax)
+    # -- left panel: Budnik source map --
+    src = FIG / "budnik_faultmap.png"
+    if src.exists():
+        axL.imshow(plt.imread(src))
+    axL.set_axis_off()
+    axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=10)
 
+    # -- right panel: OSM + sites + georeferenced faults --
+    axR.set_xlim(cx0 - half, cx0 + half)
+    axR.set_ylim(cy0 - half, cy0 + half)
+    axR.set_aspect("equal")
+    add_basemap_safe(axR)
+
+    georef = bool(load_budnik_faults())
     faults = load_budnik_faults() or site_fault_lines(df, zframes)
     for i, (fid, coords) in enumerate(faults.items()):
         fx, fy = zip(*[merc(lo, la) for lo, la in coords])
-        ax.plot(fx, fy, color="#5a3d1e", lw=1.8, ls=(0, (7, 4)), zorder=4,
-                label="High-angle fault (Budnik et al. 2010)" if i == 0 else None)
+        axR.plot(fx, fy, color="#5a3d1e", lw=1.8, ls=(0, (7, 4)), zorder=4,
+                 label="High-angle fault (Budnik et al. 2010)" if i == 0 else None)
 
     for site, zs in SITE_ZONES.items():
         sp = pd.concat([zframes[z] for z in zs])
         sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
         sx, sy = np.array(sx), np.array(sy)
         pad = half * 0.05
-        ax.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
-                                   np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
-                                   fill=False, edgecolor="black", lw=1.6,
-                                   zorder=6))
-        ax.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
-                    textcoords="offset points", xytext=(0, 7), ha="center",
-                    fontsize=13, fontweight="bold", zorder=7,
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4",
-                              alpha=0.9))
+        axR.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
+                                    np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
+                                    fill=False, edgecolor="black", lw=1.6,
+                                    zorder=6))
+        axR.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
+                     textcoords="offset points", xytext=(0, 7), ha="center",
+                     fontsize=12, fontweight="bold", zorder=7,
+                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4",
+                               alpha=0.9))
 
-    add_scalebar(ax, cx0 - half * 0.92, cy0 - half * 0.92,
+    add_scalebar(axR, cx0 - half * 0.92, cy0 - half * 0.92,
                  _round_scale(half * math.cos(math.radians(clat))), clat)
-    north_arrow(ax)
-    ax.set_axis_off()
+    north_arrow(axR)
+    axR.set_axis_off()
     if faults:
-        ax.legend(loc="upper left", fontsize=8.5, framealpha=0.9).set_zorder(9)
-    fig.tight_layout(pad=0.3)
+        axR.legend(loc="upper left", fontsize=8, framealpha=0.9).set_zorder(9)
+    note = "faults: Budnik et al. 2010 (georeferenced)" if georef \
+        else "faults: survey-located (awaiting georeferenced Budnik layer)"
+    axR.set_title(f"(b) Study sites on OpenStreetMap\n{note}", fontsize=10)
+
+    fig.tight_layout(pad=0.4)
     out = FIG / "overview.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)
-    print(f"wrote {out.relative_to(FIG.parent)}")
+    print(f"wrote {out.relative_to(FIG.parent)}  (georef faults: {georef})")
 
 
 if __name__ == "__main__":
