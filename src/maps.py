@@ -188,8 +188,9 @@ def _runs(xs, ys):
         yield xs[s:e], ys[s:e]
 
 
-def _zone_patch(ax, xs, ys, pad):
-    """Shade a survey zone as a padded convex hull (grey, translucent)."""
+def _zone_patch(ax, xs, ys, pad, facecolor="yellow", alpha=0.30,
+                edgecolor="0.25", zorder=4):
+    """Shade a survey zone as a padded convex hull (highlighted region)."""
     from scipy.spatial import ConvexHull, QhullError
 
     pts = np.column_stack([xs, ys])
@@ -206,9 +207,8 @@ def _zone_patch(ax, xs, ys, pad):
     d = poly - c
     n = np.linalg.norm(d, axis=1, keepdims=True)
     poly = poly + d / np.maximum(n, 1e-9) * pad  # push vertices out by `pad`
-    # Outline-only (no fill) so the data points are never obscured.
-    ax.add_patch(MplPolygon(poly, closed=True, facecolor="none",
-                            edgecolor="0.30", lw=1.0, ls=(0, (4, 3)), zorder=2))
+    ax.add_patch(MplPolygon(poly, closed=True, facecolor=facecolor, alpha=alpha,
+                            edgecolor=edgecolor, lw=1.2, zorder=zorder))
 
 
 def _fault_line(ax, fault_pts, cx0, cy0, half):
@@ -230,7 +230,10 @@ def _fault_line(ax, fault_pts, cx0, cy0, half):
 
 
 def draw_site(site, df, zframes, welch):
+    """Site map matching the overview style: OpenTopoMap terrain + TIGER roads
+    and rivers + traced Budnik faults + highlighted zones + EC-coloured dots."""
     import pandas as pd
+    import matplotlib.patheffects as pe
     zones = SITE_ZONES[site]
     site_pts = pd.concat([zframes[z] for z in zones])
     clat = float(site_pts["lat"].mean())
@@ -239,17 +242,36 @@ def draw_site(site, df, zframes, welch):
     px, py = np.array(px), np.array(py)
     cx0, cy0 = (px.min() + px.max()) / 2, (py.min() + py.max()) / 2
     span = max(np.ptp(px), np.ptp(py))
-    half = span * 0.72 + 90  # points fill ~60% of the frame
+    half = span * 0.72 + 90
 
-    fig, ax = plt.subplots(figsize=(6.0, 5.4))
+    fig, ax = plt.subplots(figsize=(6.4, 5.6))
     ax.set_xlim(cx0 - half, cx0 + half)
     ax.set_ylim(cy0 - half, cy0 + half)
     ax.set_aspect("equal")
+    ax.set_axis_off()
+    add_basemap_safe(ax, source=cx.providers.OpenTopoMap)
+
+    def halo(w):
+        return [pe.withStroke(linewidth=w, foreground="white")]
+
+    # roads (brown) and rivers (blue) -- matplotlib clips to the axes extent
+    for seg in load_roads():
+        rx, ry = zip(*[merc(lo, la) for lo, la in seg])
+        ax.plot(rx, ry, color="#8a5a2b", lw=1.1, zorder=3, path_effects=halo(2.2))
+    for seg in load_rivers():
+        rx, ry = zip(*[merc(lo, la) for lo, la in seg])
+        ax.plot(rx, ry, color="#2b6fb0", lw=1.0, zorder=3, path_effects=halo(2.0))
+
+    # faults (traced Budnik lines, clipped to the site extent)
+    for coords in load_budnik_faults().values():
+        fx, fy = zip(*[merc(lo, la) for lo, la in coords])
+        ax.plot(fx, fy, color="black", lw=1.8, solid_capstyle="round", zorder=4,
+                path_effects=halo(3.0))
 
     ec_all = site_pts["EC"].to_numpy(dtype=float)
     norm = Normalize(vmin=ec_all.min(), vmax=ec_all.max())
 
-    # shaded zones (one region per contiguous run; only 3-2 splits)
+    # highlighted zones + labels; remember centroids for the contrast arrows
     centroids = {}
     for z in zones:
         fr = zframes[z]
@@ -260,75 +282,61 @@ def draw_site(site, df, zframes, welch):
         ax.annotate(f"Zone {z}", (xs.mean(), ys.max()),
                     textcoords="offset points", xytext=(0, 9),
                     fontsize=10, fontweight="bold", zorder=7, ha="center",
-                    bbox=dict(boxstyle="round,pad=0.15", fc="white",
-                              ec="0.5", alpha=0.85))
+                    bbox=dict(boxstyle="round,pad=0.18", fc="white",
+                              ec="0.4", alpha=0.9))
         centroids[z] = (xs.mean(), ys.mean())
 
-    add_basemap_safe(ax)
-    has_fault = _fault_line(ax, site_pts[site_pts["InFault"] == "yes"],
-                            cx0, cy0, half)
-
-    # survey points coloured by specific conductance
+    # survey points -- solid dots coloured by specific conductance
     for z in zones:
         fr = zframes[z]
         xs, ys = zip(*[merc(lo, la) for lo, la in zip(fr["lon"], fr["lat"])])
         ax.scatter(xs, ys, c=fr["EC"].to_numpy(dtype=float), cmap=EC_CMAP,
-                   norm=norm, s=56, edgecolor="white", linewidth=0.7, zorder=6)
+                   norm=norm, s=55, edgecolor="white", linewidth=0.5, zorder=6)
 
-    # contrast arrows (fault = red, tributary = blue) with Welch significance;
-    # drawn UNDER the data points so the points stay visible.
+    # contrast arrows (fault = red, tributary = blue) with Welch significance
     for name, a, b, kind in CONTRASTS:
         if a in centroids and b in centroids:
             (xa, ya), (xb, yb) = centroids[a], centroids[b]
             color = "firebrick" if kind == "fault" else "steelblue"
             ax.add_patch(FancyArrowPatch((xa, ya), (xb, yb), arrowstyle="-|>",
-                                         mutation_scale=13, color=color, lw=1.6,
-                                         zorder=4, shrinkA=16, shrinkB=16,
-                                         alpha=0.9))
+                                         mutation_scale=14, color=color, lw=2.0,
+                                         zorder=7, shrinkA=16, shrinkB=16))
             sig = "*" if welch[name] < 0.05 else "n.s."
-            # place the label offset perpendicular to the arrow, off the points
             dx, dy = xb - xa, yb - ya
             L = math.hypot(dx, dy) or 1.0
             ox, oy = -dy / L, dx / L
             off = half * 0.13
             ax.text((xa + xb) / 2 + ox * off, (ya + yb) / 2 + oy * off,
                     f"{name}{sig}", color=color, fontsize=9.5, fontweight="bold",
-                    zorder=8, ha="center", va="center",
+                    zorder=9, ha="center", va="center",
                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color,
                               lw=1.1))
 
-    _decorate(ax, fig, cx0, cy0, half, clat, norm, has_fault)
+    add_scalebar(ax, _round_scale(half * math.cos(math.radians(clat))), clat)
+    north_arrow(ax)
+    sm = ScalarMappable(norm=norm, cmap=EC_CMAP)
+    cb = fig.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
+    cb.set_label(r"Specific conductance ($\mu$S cm$^{-1}$)", fontsize=9)
+    cb.ax.tick_params(labelsize=8)
+    handles = [
+        Line2D([0], [0], color="black", lw=1.8,
+               label="High-angle fault (Budnik et al. 2010)"),
+        Line2D([0], [0], color="#8a5a2b", lw=1.4, label="Highway / county road"),
+        Line2D([0], [0], color="#2b6fb0", lw=1.4, label="River / stream"),
+        Line2D([0], [0], color="firebrick", lw=2, marker=">",
+               label="Fault contrast"),
+        Line2D([0], [0], color="steelblue", lw=2, marker=">",
+               label="Tributary contrast"),
+        Patch(facecolor="yellow", alpha=0.3, edgecolor="0.25",
+              label="Survey zone"),
+    ]
+    ax.legend(handles=handles, loc="upper left", fontsize=7,
+              framealpha=0.9, borderpad=0.5).set_zorder(10)
     fig.tight_layout(pad=0.3)
     out = FIG / f"site{site}.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out.relative_to(FIG.parent)}")
-
-
-def _decorate(ax, fig, cx0, cy0, half, clat, norm, has_fault):
-    """Add scale bar, north arrow, colour bar, and legend."""
-    add_scalebar(ax, _round_scale(half * math.cos(math.radians(clat))), clat)
-    north_arrow(ax)
-    ax.set_axis_off()
-
-    sm = ScalarMappable(norm=norm, cmap=EC_CMAP)
-    cb = fig.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
-    cb.set_label(r"Specific conductance ($\mu$S cm$^{-1}$)", fontsize=9)
-    cb.ax.tick_params(labelsize=8)
-
-    handles = [
-        Line2D([0], [0], color="firebrick", lw=2, marker=">",
-               label="Fault contrast (t-test)"),
-        Line2D([0], [0], color="steelblue", lw=2, marker=">",
-               label="Tributary contrast"),
-        Patch(facecolor="0.35", alpha=0.2, edgecolor="0.25", label="Survey zone"),
-    ]
-    if has_fault:
-        handles.insert(0, Line2D([0], [0], color="#5a3d1e", lw=2.2,
-                                 ls=(0, (7, 4)),
-                                 label="High-angle fault (Budnik et al. 2010)"))
-    ax.legend(handles=handles, loc="upper left", fontsize=7.5,
-              framealpha=0.9, borderpad=0.5).set_zorder(9)
 
 
 def merc_inv(x, y):
