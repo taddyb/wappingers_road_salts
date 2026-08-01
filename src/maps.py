@@ -498,34 +498,43 @@ def draw_overview(df, zframes):
              transform=axL.transAxes, ha="center", va="top", fontsize=7,
              color="0.3")
 
-    # -- (b) clean vector map: roads + rivers + faults + county outline + sites --
+    # -- (b) landscape basemap + roads + rivers + faults + outline + sites --
+    import matplotlib.patheffects as pe
     axR.set_xlim(left, right)
     axR.set_ylim(bottom, top)
     axR.set_aspect("equal")
     axR.set_axis_off()
-    axR.set_facecolor("white")
+    # landscape only (satellite imagery -- no roads, no labels)
+    add_basemap_safe(axR, source=cx.providers.Esri.WorldImagery)
+
+    def halo(w):  # white casing so vectors stay legible over the imagery
+        return [pe.withStroke(linewidth=w, foreground="white")]
 
     # highways and county roads (brown)
     for seg in load_roads():
         rx, ry = zip(*[merc(lo, la) for lo, la in seg])
-        axR.plot(rx, ry, color="#8a5a2b", lw=0.7, zorder=3)
+        axR.plot(rx, ry, color="#8a5a2b", lw=0.8, zorder=3,
+                 path_effects=halo(1.8))
 
     # rivers / streams (blue)
     for seg in load_rivers():
         rx, ry = zip(*[merc(lo, la) for lo, la in seg])
-        axR.plot(rx, ry, color="#2b6fb0", lw=0.6, alpha=0.8, zorder=3)
+        axR.plot(rx, ry, color="#2b6fb0", lw=0.7, zorder=3,
+                 path_effects=halo(1.6))
 
     # county outline (dashed, lighter)
     for ring in load_county_outline():
         ox, oy = zip(*[merc(lo, la) for lo, la in ring])
-        axR.plot(ox, oy, color="0.45", lw=0.8, ls=(0, (6, 4)), zorder=6)
+        axR.plot(ox, oy, color="0.2", lw=0.9, ls=(0, (6, 4)), zorder=6,
+                 path_effects=halo(2.0))
 
     # faults (thin, black)
     if vec:
         for i, (fid, coords) in enumerate(vec.items()):
             fx, fy = zip(*[merc(lo, la) for lo, la in coords])
             axR.plot(fx, fy, color="black", lw=1.6, solid_capstyle="round",
-                     zorder=5, label="High-angle fault (Budnik et al. 2010)"
+                     zorder=5, path_effects=halo(3.0),
+                     label="High-angle fault (Budnik et al. 2010)"
                      if i == 0 else None)
         faultsrc = "traced"
     elif ras is not None:
