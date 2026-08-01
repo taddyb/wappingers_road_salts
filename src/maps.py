@@ -10,9 +10,12 @@ Fault handling (hybrid, per the project decision):
   * Site maps -- the fault is anchored to this site's ``InFault`` survey points
     (where the crossing was actually observed in the field), attributed to
     Budnik et al. 2010.
-  * Overview -- the regional faults are digitized from Budnik et al. 2010
-    Fig. 3.10 (``data/faults_budnik2010.csv``); county-scale precision is
-    appropriate there.
+  * Overview -- one fault trace per site, located from that site's ``InFault``
+    GPS points and extended along the fitted strike (see ``site_fault_lines``).
+    This pins each Budnik-mapped crossing precisely, rather than tracing the
+    1:340,000 county figure (whose raster georeferencing carries multi-km error
+    at overview scale). To use hand-digitized county traces instead, drop a
+    ``data/faults_budnik2010.csv`` (columns: fault_id, lon, lat) and it wins.
 
 Run:  .venv/bin/python src/maps.py
 """
@@ -126,8 +129,9 @@ def _zone_patch(ax, xs, ys, pad):
     d = poly - c
     n = np.linalg.norm(d, axis=1, keepdims=True)
     poly = poly + d / np.maximum(n, 1e-9) * pad  # push vertices out by `pad`
-    ax.add_patch(MplPolygon(poly, closed=True, facecolor="0.35", alpha=0.14,
-                            edgecolor="0.25", lw=1.0, zorder=3))
+    # Outline-only (no fill) so the data points are never obscured.
+    ax.add_patch(MplPolygon(poly, closed=True, facecolor="none",
+                            edgecolor="0.30", lw=1.0, ls=(0, (4, 3)), zorder=2))
 
 
 def _fault_line(ax, fault_pts, cx0, cy0, half):
@@ -192,21 +196,29 @@ def draw_site(site, df, zframes, welch):
         fr = zframes[z]
         xs, ys = zip(*[merc(lo, la) for lo, la in zip(fr["lon"], fr["lat"])])
         ax.scatter(xs, ys, c=fr["EC"].to_numpy(dtype=float), cmap=EC_CMAP,
-                   norm=norm, s=48, edgecolor="white", linewidth=0.6, zorder=5)
+                   norm=norm, s=56, edgecolor="white", linewidth=0.7, zorder=6)
 
-    # contrast arrows (fault = red, tributary = blue) with Welch significance
+    # contrast arrows (fault = red, tributary = blue) with Welch significance;
+    # drawn UNDER the data points so the points stay visible.
     for name, a, b, kind in CONTRASTS:
         if a in centroids and b in centroids:
             (xa, ya), (xb, yb) = centroids[a], centroids[b]
             color = "firebrick" if kind == "fault" else "steelblue"
             ax.add_patch(FancyArrowPatch((xa, ya), (xb, yb), arrowstyle="-|>",
-                                         mutation_scale=16, color=color, lw=2,
-                                         zorder=7, shrinkA=14, shrinkB=14))
+                                         mutation_scale=13, color=color, lw=1.6,
+                                         zorder=4, shrinkA=16, shrinkB=16,
+                                         alpha=0.9))
             sig = "*" if welch[name] < 0.05 else "n.s."
-            ax.text((xa + xb) / 2, (ya + yb) / 2, f"{name}{sig}", color=color,
-                    fontsize=10, fontweight="bold", zorder=8, ha="center",
-                    va="center", bbox=dict(boxstyle="round,pad=0.2", fc="white",
-                                           ec=color, lw=1.2))
+            # place the label offset perpendicular to the arrow, off the points
+            dx, dy = xb - xa, yb - ya
+            L = math.hypot(dx, dy) or 1.0
+            ox, oy = -dy / L, dx / L
+            off = half * 0.13
+            ax.text((xa + xb) / 2 + ox * off, (ya + yb) / 2 + oy * off,
+                    f"{name}{sig}", color=color, fontsize=9.5, fontweight="bold",
+                    zorder=8, ha="center", va="center",
+                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color,
+                              lw=1.1))
 
     _decorate(ax, fig, cx0, cy0, half, clat, norm, has_fault)
     fig.tight_layout(pad=0.3)
@@ -243,8 +255,18 @@ def _decorate(ax, fig, cx0, cy0, half, clat, norm, has_fault):
               framealpha=0.9, borderpad=0.5).set_zorder(9)
 
 
+def merc_inv(x, y):
+    r = 6378137.0
+    return math.degrees(x / r), cy_to_lat(y)
+
+
 def load_budnik_faults():
-    """Load digitized Budnik Fig 3.10 fault polylines, if present."""
+    """Load digitized Budnik Fig 3.10 fault polylines from CSV, if supplied.
+
+    Optional override: if ``data/faults_budnik2010.csv`` exists (columns
+    fault_id, lon, lat), those polylines are used verbatim. Otherwise the
+    overview faults are derived from the survey (see :func:`site_fault_lines`).
+    """
     path = DATA / "faults_budnik2010.csv"
     if not path.exists():
         return {}
@@ -256,8 +278,41 @@ def load_budnik_faults():
     return faults
 
 
+def site_fault_lines(df, zframes, extend_m=2600):
+    """Fault trace per site, located from that site's ``InFault`` GPS points.
+
+    The crossing position and local strike come from the field survey (real
+    coordinates); the line is extended ``extend_m`` past the outermost fault
+    point along the fitted strike so it reads as a regional trace. These are
+    the high-angle faults mapped by Budnik et al. (2010); the survey points
+    pin their creek crossings precisely.
+    """
+    import pandas as pd
+
+    lines = {}
+    for site, zs in SITE_ZONES.items():
+        sp = pd.concat([zframes[z] for z in zs])
+        fp = sp[sp["InFault"] == "yes"]
+        if len(fp) < 2:
+            continue
+        pts = np.array([merc(lo, la) for lo, la in zip(fp["lon"], fp["lat"])])
+        c = pts.mean(axis=0)
+        # principal direction (first PCA eigenvector) = local fault strike
+        _, _, vt = np.linalg.svd(pts - c)
+        d = vt[0]
+        t = (pts - c) @ d
+        p0 = c + d * (t.min() - extend_m)
+        p1 = c + d * (t.max() + extend_m)
+        lines[f"site{site}"] = [merc_inv(*p0), merc_inv(*p1)]
+    return lines
+
+
 def draw_overview(df, zframes):
-    """Regional overview (Figure 1): all three sites + digitized faults."""
+    """Regional overview (Figure 1): just the three site boxes + regional faults.
+
+    Deliberately simple -- no individual survey points or colour bar -- so the
+    reader can see where the sites sit relative to the mapped fault network.
+    """
     import pandas as pd
     pts = df.dropna(subset=["lat", "lon"])
     xs, ys = zip(*[merc(lo, la) for lo, la in zip(pts["lon"], pts["lat"])])
@@ -271,27 +326,9 @@ def draw_overview(df, zframes):
     ax.set_ylim(cy0 - half, cy0 + half)
     ax.set_aspect("equal")
 
-    ec_all = pts["EC"].to_numpy(dtype=float)
-    norm = Normalize(vmin=ec_all.min(), vmax=ec_all.max())
-
-    for site, zs in SITE_ZONES.items():
-        sp = pd.concat([zframes[z] for z in zs])
-        sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
-        sx, sy = np.array(sx), np.array(sy)
-        pad = half * 0.04
-        ax.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
-                                   np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
-                                   fill=False, edgecolor="black", lw=1.0,
-                                   linestyle=(0, (5, 4)), zorder=6))
-        ax.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
-                    textcoords="offset points", xytext=(0, 6), ha="center",
-                    fontsize=12, fontweight="bold", zorder=7,
-                    bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="0.5",
-                              alpha=0.85))
-
     add_basemap_safe(ax)
 
-    faults = load_budnik_faults()
+    faults = load_budnik_faults() or site_fault_lines(df, zframes)
     for i, (fid, coords) in enumerate(faults.items()):
         fx, fy = zip(*[merc(lo, la) for lo, la in coords])
         ax.plot(fx, fy, color="#5a3d1e", lw=1.8, ls=(0, (7, 4)), zorder=4,
@@ -300,19 +337,24 @@ def draw_overview(df, zframes):
     for site, zs in SITE_ZONES.items():
         sp = pd.concat([zframes[z] for z in zs])
         sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
-        ax.scatter(sx, sy, c=sp["EC"].to_numpy(dtype=float), cmap=EC_CMAP,
-                   norm=norm, s=24, edgecolor="white", linewidth=0.35, zorder=5)
+        sx, sy = np.array(sx), np.array(sy)
+        pad = half * 0.05
+        ax.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
+                                   np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
+                                   fill=False, edgecolor="black", lw=1.6,
+                                   zorder=6))
+        ax.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
+                    textcoords="offset points", xytext=(0, 7), ha="center",
+                    fontsize=13, fontweight="bold", zorder=7,
+                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4",
+                              alpha=0.9))
 
     add_scalebar(ax, cx0 - half * 0.92, cy0 - half * 0.92,
                  _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(ax)
     ax.set_axis_off()
-    sm = ScalarMappable(norm=norm, cmap=EC_CMAP)
-    cb = fig.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
-    cb.set_label(r"Specific conductance ($\mu$S cm$^{-1}$)", fontsize=9)
-    cb.ax.tick_params(labelsize=8)
     if faults:
-        ax.legend(loc="upper left", fontsize=8, framealpha=0.9).set_zorder(9)
+        ax.legend(loc="upper left", fontsize=8.5, framealpha=0.9).set_zorder(9)
     fig.tight_layout(pad=0.3)
     out = FIG / "overview.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")
