@@ -185,8 +185,8 @@ def _runs(xs, ys):
         yield xs[s:e], ys[s:e]
 
 
-def _zone_patch(ax, xs, ys, pad, facecolor="yellow", alpha=0.30,
-                edgecolor="0.25", zorder=4):
+def _zone_patch(ax, xs, ys, pad, facecolor="yellow", alpha=0.28,
+                edgecolor="red", zorder=4):
     """Shade a survey zone as a padded convex hull (highlighted region)."""
     from scipy.spatial import ConvexHull, QhullError
 
@@ -205,7 +205,7 @@ def _zone_patch(ax, xs, ys, pad, facecolor="yellow", alpha=0.30,
     n = np.linalg.norm(d, axis=1, keepdims=True)
     poly = poly + d / np.maximum(n, 1e-9) * pad  # push vertices out by `pad`
     ax.add_patch(MplPolygon(poly, closed=True, facecolor=facecolor, alpha=alpha,
-                            edgecolor=edgecolor, lw=1.2, zorder=zorder))
+                            edgecolor=edgecolor, lw=2.0, zorder=zorder))
 
 
 def _fault_line(ax, fault_pts, cx0, cy0, half):
@@ -294,42 +294,12 @@ def draw_site(site, df, zframes, cstats):
                     bbox=dict(boxstyle="round,pad=0.18", fc="white",
                               ec="0.4", alpha=0.92))
 
-    # neutral downstream-flow arrow through the zone centroids (upstream->down)
-    path = [centroids[z] for z in zones if z in centroids]
-    for (xa, ya), (xb, yb) in zip(path[:-1], path[1:]):
-        ax.add_patch(FancyArrowPatch((xa, ya), (xb, yb), arrowstyle="-|>",
-                                     mutation_scale=16, color="0.35", lw=2.2,
-                                     zorder=5, shrinkA=18, shrinkB=18,
-                                     alpha=0.8, path_effects=halo(3.5)))
-
     # survey points -- solid dots (dark edge so mid-range colours stay visible)
     for z in zones:
         fr = zframes[z]
         xs, ys = zip(*[merc(lo, la) for lo, la in zip(fr["lon"], fr["lat"])])
         ax.scatter(xs, ys, c=fr["EC"].to_numpy(dtype=float), cmap=EC_CMAP,
                    norm=norm, s=60, edgecolor="0.15", linewidth=0.6, zorder=6)
-
-    # transition boxes at each boundary: feature + result (green=sig, grey=n.s.)
-    for name, a, b, kind in CONTRASTS:
-        if a not in centroids or b not in centroids:
-            continue
-        r = cstats[name]
-        (xa, ya), (xb, yb) = centroids[a], centroids[b]
-        feat = "Fault" if kind == "fault" else "Tributary"
-        d = r["delta"]
-        sigcol = "#1a7a3a" if r["welch_p"] < 0.05 else "0.4"
-        psig = "p<0.001" if r["welch_p"] < 0.001 else f"p={r['welch_p']:.2f}"
-        arrow = "$\\uparrow$" if d > 0 else "$\\downarrow$"
-        dmag = "<1" if abs(d) < 1 else f"{abs(d):.0f}"
-        txt = f"{feat}\n{arrow}{dmag} $\\mu$S/cm\n{psig}"
-        dx, dy = xb - xa, yb - ya
-        L = math.hypot(dx, dy) or 1.0
-        ox, oy = -dy / L, dx / L
-        off = half * 0.16
-        ax.text((xa + xb) / 2 + ox * off, (ya + yb) / 2 + oy * off, txt,
-                color="black", fontsize=7.5, zorder=9, ha="center", va="center",
-                bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=sigcol,
-                          lw=1.6))
 
     add_scalebar(ax, _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(ax)
@@ -342,12 +312,8 @@ def draw_site(site, df, zframes, cstats):
                label="High-angle fault (approx.; Budnik et al. 2010)"),
         Line2D([0], [0], color="#8a5a2b", lw=1.4, label="Highway / county road"),
         Line2D([0], [0], color="#2b6fb0", lw=1.4, label="River / stream"),
-        Line2D([0], [0], color="0.35", lw=2.2, marker=">",
-               label="Downstream flow"),
-        Patch(facecolor="yellow", alpha=0.3, edgecolor="0.25",
+        Patch(facecolor="yellow", alpha=0.28, edgecolor="red", lw=2.0,
               label="Survey zone"),
-        Patch(facecolor="white", edgecolor="#1a7a3a", lw=1.6,
-              label="Boundary: significant / n.s. (grey)"),
     ]
     ax.legend(handles=handles, loc="upper left", fontsize=7,
               framealpha=0.9, borderpad=0.5).set_zorder(10)
