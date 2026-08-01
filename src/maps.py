@@ -131,25 +131,22 @@ def load_roads():
 
 
 def add_scalebar(ax, length_m, lat):
-    """Clean scale bar (bar + end ticks + label) sized to the axis extent.
-
-    ``length_m`` is a ground distance; it is drawn in Web-Mercator units,
-    correcting for the projection's latitude stretch.
-    """
+    """Small scale bar in the bottom-right corner (bar + end ticks + label)."""
     x0d, x1d = ax.get_xlim()
     y0d, y1d = ax.get_ylim()
     xr, yr = x1d - x0d, y1d - y0d
     w = length_m / math.cos(math.radians(lat))
-    x0 = x0d + 0.06 * xr
-    y0 = y0d + 0.07 * yr
-    th = 0.010 * yr
+    x1 = x1d - 0.04 * xr          # right-aligned
+    x0 = x1 - w
+    y0 = y0d + 0.05 * yr
+    th = 0.007 * yr
     ax.add_patch(plt.Rectangle((x0, y0), w, th, fc="black", ec="black", zorder=7))
     for xx in (x0, x0 + w):  # end ticks
-        ax.plot([xx, xx], [y0, y0 + 2.2 * th], color="black", lw=1.1, zorder=7)
+        ax.plot([xx, xx], [y0, y0 + 2.0 * th], color="black", lw=0.9, zorder=7)
     label = f"{length_m/1000:g} km" if length_m >= 1000 else f"{length_m:g} m"
-    ax.text(x0 + w / 2, y0 + 2.6 * th, label, ha="center", va="bottom",
-            fontsize=8, zorder=7,
-            bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.75))
+    ax.text(x0 + w / 2, y0 + 2.4 * th, label, ha="center", va="bottom",
+            fontsize=7, zorder=7,
+            bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.75))
 
 
 def north_arrow(ax):
@@ -163,7 +160,7 @@ def north_arrow(ax):
 
 
 def _round_scale(ground_half):
-    target = ground_half * 0.8
+    target = ground_half * 0.5  # ~25% of the map width -> compact bar
     for v in (100, 200, 500, 1000, 2000, 5000, 10000):
         if v >= target:
             return v
@@ -229,9 +226,11 @@ def _fault_line(ax, fault_pts, cx0, cy0, half):
     return True
 
 
-def draw_site(site, df, zframes, welch):
-    """Site map matching the overview style: OpenTopoMap terrain + TIGER roads
-    and rivers + traced Budnik faults + highlighted zones + EC-coloured dots."""
+def draw_site(site, df, zframes, cstats):
+    """Site map: OpenTopoMap terrain + TIGER roads/rivers + approximate Budnik
+    faults + highlighted zones (with mean EC) + EC-coloured dots. A neutral
+    grey arrow shows downstream flow; each boundary carries a box stating the
+    feature and the Welch t-test result (no cryptic codes)."""
     import pandas as pd
     import matplotlib.patheffects as pe
     zones = SITE_ZONES[site]
@@ -262,16 +261,16 @@ def draw_site(site, df, zframes, welch):
         rx, ry = zip(*[merc(lo, la) for lo, la in seg])
         ax.plot(rx, ry, color="#2b6fb0", lw=1.0, zorder=3, path_effects=halo(2.0))
 
-    # faults (traced Budnik lines, clipped to the site extent)
+    # faults (approximate; traced from Budnik 2010) -- thicker
     for coords in load_budnik_faults().values():
         fx, fy = zip(*[merc(lo, la) for lo, la in coords])
-        ax.plot(fx, fy, color="black", lw=1.8, solid_capstyle="round", zorder=4,
-                path_effects=halo(3.0))
+        ax.plot(fx, fy, color="black", lw=2.6, solid_capstyle="round", zorder=4,
+                path_effects=halo(4.0))
 
     ec_all = site_pts["EC"].to_numpy(dtype=float)
     norm = Normalize(vmin=ec_all.min(), vmax=ec_all.max())
 
-    # highlighted zones + labels; remember centroids for the contrast arrows
+    # highlighted zones, labelled with the zone id and its mean EC
     centroids = {}
     for z in zones:
         fr = zframes[z]
@@ -279,38 +278,58 @@ def draw_site(site, df, zframes, welch):
         xs, ys = np.array(xs), np.array(ys)
         for rx, ry in _runs(xs, ys):
             _zone_patch(ax, rx, ry, pad=span * 0.05)
-        ax.annotate(f"Zone {z}", (xs.mean(), ys.max()),
-                    textcoords="offset points", xytext=(0, 9),
-                    fontsize=10, fontweight="bold", zorder=7, ha="center",
-                    bbox=dict(boxstyle="round,pad=0.18", fc="white",
-                              ec="0.4", alpha=0.9))
         centroids[z] = (xs.mean(), ys.mean())
 
-    # survey points -- solid dots coloured by specific conductance
+    # zone labels (id + mean EC), splayed radially outward to avoid overlap
+    for z in zones:
+        zx, zy = centroids[z]
+        vx, vy = zx - cx0, zy - cy0
+        L = math.hypot(vx, vy) or 1.0
+        lx = min(max(zx + vx / L * span * 0.16, cx0 - half * 0.95), cx0 + half * 0.95)
+        ly = min(max(zy + vy / L * span * 0.16, cy0 - half * 0.9), cy0 + half * 0.9)
+        mean_ec = zframes[z]["EC"].astype(float).mean()
+        ax.annotate(f"Zone {z}\n{mean_ec:.0f} $\\mu$S/cm", (lx, ly),
+                    fontsize=8.5, fontweight="bold", zorder=8, ha="center",
+                    va="center",
+                    bbox=dict(boxstyle="round,pad=0.18", fc="white",
+                              ec="0.4", alpha=0.92))
+
+    # neutral downstream-flow arrow through the zone centroids (upstream->down)
+    path = [centroids[z] for z in zones if z in centroids]
+    for (xa, ya), (xb, yb) in zip(path[:-1], path[1:]):
+        ax.add_patch(FancyArrowPatch((xa, ya), (xb, yb), arrowstyle="-|>",
+                                     mutation_scale=16, color="0.35", lw=2.2,
+                                     zorder=5, shrinkA=18, shrinkB=18,
+                                     alpha=0.8, path_effects=halo(3.5)))
+
+    # survey points -- solid dots (dark edge so mid-range colours stay visible)
     for z in zones:
         fr = zframes[z]
         xs, ys = zip(*[merc(lo, la) for lo, la in zip(fr["lon"], fr["lat"])])
         ax.scatter(xs, ys, c=fr["EC"].to_numpy(dtype=float), cmap=EC_CMAP,
-                   norm=norm, s=55, edgecolor="white", linewidth=0.5, zorder=6)
+                   norm=norm, s=60, edgecolor="0.15", linewidth=0.6, zorder=6)
 
-    # contrast arrows (fault = red, tributary = blue) with Welch significance
+    # transition boxes at each boundary: feature + result (green=sig, grey=n.s.)
     for name, a, b, kind in CONTRASTS:
-        if a in centroids and b in centroids:
-            (xa, ya), (xb, yb) = centroids[a], centroids[b]
-            color = "firebrick" if kind == "fault" else "steelblue"
-            ax.add_patch(FancyArrowPatch((xa, ya), (xb, yb), arrowstyle="-|>",
-                                         mutation_scale=14, color=color, lw=2.0,
-                                         zorder=7, shrinkA=16, shrinkB=16))
-            sig = "*" if welch[name] < 0.05 else "n.s."
-            dx, dy = xb - xa, yb - ya
-            L = math.hypot(dx, dy) or 1.0
-            ox, oy = -dy / L, dx / L
-            off = half * 0.13
-            ax.text((xa + xb) / 2 + ox * off, (ya + yb) / 2 + oy * off,
-                    f"{name}{sig}", color=color, fontsize=9.5, fontweight="bold",
-                    zorder=9, ha="center", va="center",
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color,
-                              lw=1.1))
+        if a not in centroids or b not in centroids:
+            continue
+        r = cstats[name]
+        (xa, ya), (xb, yb) = centroids[a], centroids[b]
+        feat = "Fault" if kind == "fault" else "Tributary"
+        d = r["delta"]
+        sigcol = "#1a7a3a" if r["welch_p"] < 0.05 else "0.4"
+        psig = "p<0.001" if r["welch_p"] < 0.001 else f"p={r['welch_p']:.2f}"
+        arrow = "$\\uparrow$" if d > 0 else "$\\downarrow$"
+        dmag = "<1" if abs(d) < 1 else f"{abs(d):.0f}"
+        txt = f"{feat}\n{arrow}{dmag} $\\mu$S/cm\n{psig}"
+        dx, dy = xb - xa, yb - ya
+        L = math.hypot(dx, dy) or 1.0
+        ox, oy = -dy / L, dx / L
+        off = half * 0.16
+        ax.text((xa + xb) / 2 + ox * off, (ya + yb) / 2 + oy * off, txt,
+                color="black", fontsize=7.5, zorder=9, ha="center", va="center",
+                bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=sigcol,
+                          lw=1.6))
 
     add_scalebar(ax, _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(ax)
@@ -319,16 +338,16 @@ def draw_site(site, df, zframes, welch):
     cb.set_label(r"Specific conductance ($\mu$S cm$^{-1}$)", fontsize=9)
     cb.ax.tick_params(labelsize=8)
     handles = [
-        Line2D([0], [0], color="black", lw=1.8,
-               label="High-angle fault (Budnik et al. 2010)"),
+        Line2D([0], [0], color="black", lw=2.6,
+               label="High-angle fault (approx.; Budnik et al. 2010)"),
         Line2D([0], [0], color="#8a5a2b", lw=1.4, label="Highway / county road"),
         Line2D([0], [0], color="#2b6fb0", lw=1.4, label="River / stream"),
-        Line2D([0], [0], color="firebrick", lw=2, marker=">",
-               label="Fault contrast"),
-        Line2D([0], [0], color="steelblue", lw=2, marker=">",
-               label="Tributary contrast"),
+        Line2D([0], [0], color="0.35", lw=2.2, marker=">",
+               label="Downstream flow"),
         Patch(facecolor="yellow", alpha=0.3, edgecolor="0.25",
               label="Survey zone"),
+        Patch(facecolor="white", edgecolor="#1a7a3a", lw=1.6,
+              label="Boundary: significant / n.s. (grey)"),
     ]
     ax.legend(handles=handles, loc="upper left", fontsize=7,
               framealpha=0.9, borderpad=0.5).set_zorder(10)
@@ -647,7 +666,7 @@ def _draw_overview_fallback(df, zframes):
 if __name__ == "__main__":
     df = load_salinity()
     zframes = zone_frames(df)
-    welch = {r["contrast"]: r["welch_p"] for r in analyze()}
+    cstats = {r["contrast"]: r for r in analyze()}
     draw_overview(df, zframes)
     for site in (1, 2, 3):
-        draw_site(site, df, zframes, welch)
+        draw_site(site, df, zframes, cstats)
