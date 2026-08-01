@@ -504,10 +504,10 @@ def draw_overview(df, zframes):
     axR.set_ylim(bottom, top)
     axR.set_aspect("equal")
     axR.set_axis_off()
-    # landscape only (satellite imagery -- no roads, no labels)
-    add_basemap_safe(axR, source=cx.providers.Esri.WorldImagery)
+    # OSM terrain basemap (hillshade + roads + rivers), Google-terrain-like
+    add_basemap_safe(axR, source=cx.providers.OpenTopoMap)
 
-    def halo(w):  # white casing so vectors stay legible over the imagery
+    def halo(w):  # white casing so vectors stay legible over the terrain
         return [pe.withStroke(linewidth=w, foreground="white")]
 
     # highways and county roads (brown)
