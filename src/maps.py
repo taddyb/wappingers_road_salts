@@ -35,15 +35,6 @@ EC_CMAP = LinearSegmentedColormap.from_list(
     "ec", ["lightblue", "blue", "black", "orange", "yellow"]
 )
 
-# Per-site view: (center lat, lon, half-width in metres). Tuned to frame each
-# site's points with context, echoing the zoom levels in the original script.
-SITE_VIEW = {
-    1: (41.8033, -73.7845, 900),
-    2: (41.7150, -73.8500, 5200),
-    3: (41.7895, -73.7285, 1500),
-}
-
-
 def merc(lon, lat):
     r = 6378137.0
     x = r * math.radians(lon)
@@ -60,23 +51,35 @@ def add_scalebar(ax, x0, y0, length_m, lat):
             ha="center", va="bottom", fontsize=8, zorder=6)
 
 
-def north_arrow(ax, x, y, size):
-    ax.annotate("N", xy=(x, y), xytext=(x, y - size),
-                arrowprops=dict(arrowstyle="-|>", color="black", lw=1.5),
-                ha="center", va="center", fontsize=11, fontweight="bold", zorder=6)
+def north_arrow(ax):
+    """Prominent north arrow at a fixed size (axes fraction, extent-independent)."""
+    ax.annotate("N", xy=(0.93, 0.955), xytext=(0.93, 0.80),
+                xycoords="axes fraction", textcoords="axes fraction",
+                arrowprops=dict(arrowstyle="-|>,head_width=0.5,head_length=0.9",
+                                color="black", lw=3),
+                ha="center", va="bottom", fontsize=18, fontweight="bold",
+                zorder=8)
 
 
 def draw_site(site, df, zframes):
-    clat, clon, half = SITE_VIEW[site]
-    cx0, cy0 = merc(clon, clat)
-    stretch = 1.0 / math.cos(math.radians(clat))
-    half_x = half * stretch
+    import pandas as pd
+    zones = SITE_ZONES[site]
+    site_pts = pd.concat([zframes[z] for z in zones])
+    clat = float(site_pts["lat"].mean())
 
-    fig, ax = plt.subplots(figsize=(5.2, 5.0))
+    # Auto-frame from the site's own points with a generous margin so the map
+    # is not zoomed in tight on the survey line.
+    px, py = zip(*[merc(lo, la) for lo, la in zip(site_pts["lon"], site_pts["lat"])])
+    px, py = np.array(px), np.array(py)
+    cx0, cy0 = (px.min() + px.max()) / 2, (py.min() + py.max()) / 2
+    span = max(np.ptp(px), np.ptp(py))
+    half_x = span * 0.85 + 120  # points fill ~55-60% of the frame
+
+    fig, ax = plt.subplots(figsize=(5.4, 5.2))
     ax.set_xlim(cx0 - half_x, cx0 + half_x)
     ax.set_ylim(cy0 - half_x, cy0 + half_x)
+    ax.set_aspect("equal")
 
-    zones = SITE_ZONES[site]
     all_nec = np.concatenate([zframes[z]["NEC"].to_numpy() for z in zones])
     vlim = np.abs(all_nec).max()
 
@@ -89,12 +92,12 @@ def draw_site(site, df, zframes):
                    s=45, edgecolor="white", linewidth=0.5, zorder=5)
         # Draw a tight box around each contiguous cluster of the zone's points
         # (a zone such as 3-2 is split into two clusters along the reach).
-        pad = half_x * 0.05
-        for cx_, cy_ in _clusters(xs, ys, gap=half_x * 0.4):
+        pad = span * 0.035
+        for cx_, cy_ in _clusters(xs, ys, gap=span * 0.3):
             ax.add_patch(Rectangle(
                 (cx_.min() - pad, cy_.min() - pad),
                 np.ptp(cx_) + 2 * pad, np.ptp(cy_) + 2 * pad,
-                fill=False, edgecolor="black", lw=1.5, zorder=4))
+                fill=False, edgecolor="black", lw=1.0, zorder=4))
         # label near the zone's largest cluster, offset to reduce collisions
         ax.annotate(f"Zone {z}", (xs.mean(), ys.max()),
                     textcoords="offset points", xytext=(0, 6),
@@ -105,8 +108,6 @@ def draw_site(site, df, zframes):
 
     # fault-trace band: line of best fit through THIS site's InFault points
     # (schematic; over the basemap, under the survey points).
-    import pandas as pd
-    site_pts = pd.concat([zframes[z] for z in zones])
     fault_pts = site_pts[site_pts["InFault"] == "yes"]
     if len(fault_pts) >= 2:
         fx, fy = zip(*[merc(lo, la) for lo, la in zip(fault_pts["lon"], fault_pts["lat"])])
@@ -136,8 +137,9 @@ def draw_site(site, df, zframes):
                     ha="center", va="center",
                     bbox=dict(boxstyle="circle,pad=0.15", fc="white", ec=color))
 
-    add_scalebar(ax, cx0 - half_x * 0.9, cy0 - half_x * 0.9, _round_scale(half), clat)
-    north_arrow(ax, cx0 + half_x * 0.85, cy0 + half_x * 0.9, half_x * 0.12)
+    add_scalebar(ax, cx0 - half_x * 0.9, cy0 - half_x * 0.9,
+                 _round_scale(half_x * math.cos(math.radians(clat))), clat)
+    north_arrow(ax)
     ax.set_axis_off()
     fig.tight_layout(pad=0.3)
     out = FIG / f"site{site}.png"
@@ -184,8 +186,8 @@ def draw_overview(df, zframes):
     pts = df.dropna(subset=["lat", "lon"])
     xs, ys = zip(*[merc(lo, la) for lo, la in zip(pts["lon"], pts["lat"])])
     xs, ys = np.array(xs), np.array(ys)
-    cx0, cy0 = xs.mean(), ys.mean()
-    half = max(np.ptp(xs), np.ptp(ys)) * 0.62
+    cx0, cy0 = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
+    half = max(np.ptp(xs), np.ptp(ys)) * 0.62 + 1500
 
     fig, ax = plt.subplots(figsize=(5.4, 5.2))
     ax.set_xlim(cx0 - half, cx0 + half)
@@ -193,24 +195,27 @@ def draw_overview(df, zframes):
 
     nec_all = np.concatenate([zframes[z]["NEC"].to_numpy() for z in zframes])
     vlim = np.abs(nec_all).max()
+    import pandas as pd
     for site, zs in SITE_ZONES.items():
-        import pandas as pd
         sp = pd.concat([zframes[z] for z in zs])
         sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
         sx, sy = np.array(sx), np.array(sy)
         ax.scatter(sx, sy, c=sp["NEC"], cmap=EC_CMAP, vmin=-vlim, vmax=vlim,
                    s=22, edgecolor="white", linewidth=0.3, zorder=5)
-        pad = half * 0.05
+        pad = half * 0.04
         ax.add_patch(Rectangle((sx.min() - pad, sy.min() - pad),
                                np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
-                               fill=False, edgecolor="black", lw=1.4,
+                               fill=False, edgecolor="black", lw=1.0,
                                linestyle=(0, (5, 4)), zorder=6))
         ax.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
-                    textcoords="offset points", xytext=(0, 5), ha="center",
-                    fontsize=11, fontweight="bold", zorder=7)
+                    textcoords="offset points", xytext=(0, 6), ha="center",
+                    fontsize=12, fontweight="bold", zorder=7)
     add_basemap_safe(ax)
-    add_scalebar(ax, cx0 - half * 0.9, cy0 - half * 0.92, 5000, cy_to_lat(cy0))
-    north_arrow(ax, cx0 + half * 0.85, cy0 + half * 0.9, half * 0.1)
+    add_scalebar(ax, cx0 - half * 0.9, cy0 - half * 0.92,
+                 _round_scale(half * math.cos(math.radians(cy_to_lat(cy0)))),
+                 cy_to_lat(cy0))
+    north_arrow(ax)
+    ax.set_aspect("equal")
     ax.set_axis_off()
     fig.tight_layout(pad=0.3)
     out = FIG / "overview.png"
