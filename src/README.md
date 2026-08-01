@@ -8,7 +8,7 @@ which `../main.tex` includes.
 
 ```bash
 python3 -m venv ../.venv
-../.venv/bin/pip install numpy pandas scipy matplotlib openpyxl contextily
+../.venv/bin/pip install numpy pandas scipy matplotlib openpyxl contextily rasterio
 ```
 
 ## Run
@@ -47,11 +47,18 @@ salinity increases at fault crossings — is unchanged and now rests on a
 defensible test. The `pub. t` column in `stats.py`'s output reproduces the
 original published $t$ values exactly, so the correction is auditable.
 
-## Caveat on the site maps
+## Faults
 
-Point locations, colours (per-site normalized specific conductance), zone
-boxes, and contrast arrows are all derived from the data. The **fault trace**
-is not stored as coordinates anywhere — in the original figures it was drawn by
-hand from the Dutchess County geologic map (Budnik et al. 2010). Here it is
-approximated as the line through the points flagged `InFault == yes` and is
-**schematic**; substitute digitized fault coordinates before final submission.
+- **Overview (Figure 1)** — the regional faults come from
+  `data/clipped_budnik.tif`: Budnik et al. (2010) Fig. 3.10, georeferenced in
+  QGIS, clipped to the Dutchess County polygon, and exported in EPSG:3857
+  (Web Mercator). `maps.load_budnik_raster()` reads it, drops the black
+  clip-fill / white background / blue river to transparency, recolours the
+  interior line-work brown, and overlays it on OSM at the same extent as the
+  source panel (1:1). If the `.tif` is absent, the overview falls back to a
+  survey-trace layout.
+- **Site maps** — the fault line is drawn through each site's `InFault == yes`
+  survey points (real GPS crossings), attributed to Budnik et al. 2010.
+
+`data/dutchess_county.gpkg` is the county mask used for the clip (kept for
+reproducibility).

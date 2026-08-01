@@ -339,16 +339,122 @@ def site_fault_lines(df, zframes, extend_m=2600):
     return lines
 
 
-def draw_overview(df, zframes):
-    """Two-panel regional figure (Figure 1).
+def load_budnik_raster():
+    """Load the QGIS-georeferenced clipped Budnik map (EPSG:3857).
 
-    Left  -- Budnik et al. (2010) Fig. 3.10, the source county fault map.
-    Right -- OpenStreetMap of the study area with the three site boxes and the
-             mapped high-angle faults. The right-panel faults come from the
-             QGIS-georeferenced Budnik layer if present
-             (``data/faults_budnik2010.geojson`` / ``.csv``); until that is
-             supplied they fall back to the survey-derived traces.
+    Returns (display_rgb, ink_rgba, extent) or None if the file is absent:
+      * display_rgb -- county map on a white background (for the left panel);
+      * ink_rgba    -- only the interior line-work, recoloured brown with an
+                       alpha channel so it overlays OSM cleanly (outside-fill,
+                       white background and the blue river are transparent);
+      * extent      -- [left, right, bottom, top] in Web-Mercator metres.
     """
+    tif = DATA / "clipped_budnik.tif"
+    if not tif.exists():
+        return None
+    import rasterio
+    from scipy import ndimage
+
+    src = rasterio.open(tif)
+    img = np.stack([src.read(i) for i in (1, 2, 3)], axis=-1).astype(int)
+    b = src.bounds
+    extent = [b.left, b.right, b.bottom, b.top]
+    lum = img.mean(2)
+
+    # outside = black clip-fill connected to the image border
+    black = lum < 30
+    lbl, _ = ndimage.label(black)
+    border = set(lbl[0]).union(set(lbl[-1]), set(lbl[:, 0]), set(lbl[:, -1]))
+    outside = np.isin(lbl, list(border))
+
+    r, g, bl = img[..., 0], img[..., 1], img[..., 2]
+    blue = (bl > 90) & (bl > r + 15) & (bl > g + 10)
+
+    # left-panel display: county on white
+    disp = img.copy()
+    disp[outside] = 255
+    disp = disp.astype("uint8")
+
+    # right-panel overlay: interior dark ink only, recoloured brown
+    ink = (~outside) & (~blue) & (lum < 160)
+    rgba = np.zeros((*lum.shape, 4), dtype="uint8")
+    rgba[ink] = (90, 61, 30, 255)
+    return disp, rgba, extent
+
+
+def draw_overview(df, zframes):
+    """Two-panel regional figure (Figure 1), both panels at the SAME extent.
+
+    Left  -- Budnik et al. (2010) county fault map (georeferenced, clipped).
+    Right -- the same area on OpenStreetMap with the Budnik faults overlaid and
+             the three study reaches boxed. 1:1 comparison.
+    Falls back to the previous survey-trace layout if the georeferenced raster
+    is not present.
+    """
+    import pandas as pd
+    budnik = load_budnik_raster()
+    if budnik is None:
+        return _draw_overview_fallback(df, zframes)
+    disp, ink_rgba, extent = budnik
+    left, right, bottom, top = extent
+    clat = cy_to_lat((bottom + top) / 2)
+
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.0, 6.4))
+    for ax in (axL, axR):
+        ax.set_xlim(left, right)
+        ax.set_ylim(bottom, top)
+        ax.set_aspect("equal")
+        ax.set_axis_off()
+
+    # -- left: georeferenced Budnik map --
+    axL.imshow(disp, extent=[left, right, bottom, top], origin="upper",
+               interpolation="bilinear")
+    axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=11)
+
+    # -- right: OSM + Budnik fault ink + site boxes (same extent) --
+    add_basemap_safe(axR)
+    axR.imshow(ink_rgba, extent=[left, right, bottom, top], origin="upper",
+               interpolation="bilinear", zorder=4)
+
+    for ax in (axL, axR):
+        for site, zs in SITE_ZONES.items():
+            sp = pd.concat([zframes[z] for z in zs])
+            sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
+            sx, sy = np.array(sx), np.array(sy)
+            pad = (top - bottom) * 0.012
+            ax.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
+                                       np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
+                                       fill=False, edgecolor="red", lw=1.4,
+                                       zorder=8))
+        # label sites once, on the right panel
+    for site, zs in SITE_ZONES.items():
+        sp = pd.concat([zframes[z] for z in zs])
+        sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
+        sx, sy = np.array(sx), np.array(sy)
+        axR.annotate(f"Site {site}", (np.mean(sx), sy.max()),
+                     textcoords="offset points", xytext=(6, 6), fontsize=10,
+                     fontweight="bold", color="black", zorder=9,
+                     bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="red",
+                               alpha=0.9))
+
+    from matplotlib.lines import Line2D
+    axR.legend(handles=[Line2D([0], [0], color="#5a3d1e", lw=2,
+               label="High-angle fault (Budnik et al. 2010)")],
+               loc="upper left", fontsize=8, framealpha=0.9).set_zorder(10)
+    add_scalebar(axR, _round_scale((right - left) * 0.5
+                 * math.cos(math.radians(clat))), clat)
+    north_arrow(axR)
+    axR.set_title("(b) Faults on OpenStreetMap, study reaches boxed", fontsize=11)
+
+    fig.tight_layout(pad=0.4)
+    out = FIG / "overview.png"
+    fig.savefig(out, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"wrote {out.relative_to(FIG.parent)}  (georeferenced Budnik raster)")
+
+
+def _draw_overview_fallback(df, zframes):
+    """Pre-georeference layout: Budnik PNG (left) + OSM/sites/survey-faults."""
     import pandas as pd
     pts = df.dropna(subset=["lat", "lon"])
     xs, ys = zip(*[merc(lo, la) for lo, la in zip(pts["lon"], pts["lat"])])
@@ -356,30 +462,22 @@ def draw_overview(df, zframes):
     cx0, cy0 = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
     half = max(np.ptp(xs), np.ptp(ys)) * 0.62 + 1500
     clat = cy_to_lat(cy0)
-
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.5, 5.6),
                                    gridspec_kw={"width_ratios": [1, 1.15]})
-
-    # -- left panel: Budnik source map --
     src = FIG / "budnik_faultmap.png"
     if src.exists():
         axL.imshow(plt.imread(src))
     axL.set_axis_off()
     axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=10)
-
-    # -- right panel: OSM + sites + georeferenced faults --
     axR.set_xlim(cx0 - half, cx0 + half)
     axR.set_ylim(cy0 - half, cy0 + half)
     axR.set_aspect("equal")
     add_basemap_safe(axR)
-
-    georef = bool(load_budnik_faults())
-    faults = load_budnik_faults() or site_fault_lines(df, zframes)
+    faults = site_fault_lines(df, zframes)
     for i, (fid, coords) in enumerate(faults.items()):
         fx, fy = zip(*[merc(lo, la) for lo, la in coords])
         axR.plot(fx, fy, color="#5a3d1e", lw=1.8, ls=(0, (7, 4)), zorder=4,
                  label="High-angle fault (Budnik et al. 2010)" if i == 0 else None)
-
     for site, zs in SITE_ZONES.items():
         sp = pd.concat([zframes[z] for z in zs])
         sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
@@ -387,28 +485,21 @@ def draw_overview(df, zframes):
         pad = half * 0.05
         axR.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
                                     np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
-                                    fill=False, edgecolor="black", lw=1.6,
-                                    zorder=6))
+                                    fill=False, edgecolor="black", lw=1.6, zorder=6))
         axR.annotate(f"Site {site}", (sx.mean(), sy.max() + pad),
                      textcoords="offset points", xytext=(0, 7), ha="center",
                      fontsize=12, fontweight="bold", zorder=7,
-                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4",
-                               alpha=0.9))
-
+                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.4", alpha=0.9))
     add_scalebar(axR, _round_scale(half * math.cos(math.radians(clat))), clat)
     north_arrow(axR)
-    axR.set_axis_off()
     if faults:
         axR.legend(loc="upper left", fontsize=8, framealpha=0.9).set_zorder(9)
-    note = "faults: Budnik et al. 2010 (georeferenced)" if georef \
-        else "faults: survey-located (awaiting georeferenced Budnik layer)"
-    axR.set_title(f"(b) Study sites on OpenStreetMap\n{note}", fontsize=10)
-
+    axR.set_title("(b) Study sites on OpenStreetMap", fontsize=10)
     fig.tight_layout(pad=0.4)
     out = FIG / "overview.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)
-    print(f"wrote {out.relative_to(FIG.parent)}  (georef faults: {georef})")
+    print(f"wrote {out.relative_to(FIG.parent)}  (fallback layout)")
 
 
 if __name__ == "__main__":
