@@ -58,11 +58,52 @@ def cy_to_lat(y):
     return math.degrees(2 * math.atan(math.exp(y / r)) - math.pi / 2)
 
 
-def add_basemap_safe(ax, zoom="auto"):
+def add_basemap_safe(ax, zoom="auto", source=None):
     try:
-        cx.add_basemap(ax, source=BASEMAP, zoom=zoom, attribution_size=5)
+        cx.add_basemap(ax, source=source or BASEMAP, zoom=zoom,
+                       attribution_size=5)
     except Exception as e:  # noqa: BLE001
         print(f"  basemap fetch failed ({e!r}); leaving blank background")
+
+
+def load_county_outline():
+    """Exterior rings (lon/lat) of the Dutchess County polygon, or []."""
+    gj = DATA / "dutchess_county.geojson"
+    if not gj.exists():
+        return []
+    import json
+
+    rings = []
+    for feat in json.load(open(gj)).get("features", []):
+        geom = feat.get("geometry") or {}
+        if geom.get("type") == "Polygon":
+            polys = [geom["coordinates"]]
+        elif geom.get("type") == "MultiPolygon":
+            polys = geom["coordinates"]
+        else:
+            continue
+        rings.extend(poly[0] for poly in polys)  # exterior ring of each part
+    return rings
+
+
+def load_rivers():
+    """TIGER linear-water segments as (points_lonlat, name), or []."""
+    shp = DATA / "tiger" / "tl_2024_36027_linearwater.shp"
+    if not shp.exists():
+        return []
+    import shapefile
+
+    sf = shapefile.Reader(str(shp))
+    fld = [f[0] for f in sf.fields[1:]]
+    out = []
+    for sh, rec in zip(sf.iterShapes(), sf.iterRecords()):
+        name = dict(zip(fld, rec)).get("FULLNAME", "") or ""
+        parts = list(sh.parts) + [len(sh.points)]
+        for i in range(len(parts) - 1):
+            seg = sh.points[parts[i]:parts[i + 1]]
+            if len(seg) >= 2:
+                out.append((seg, name))
+    return out
 
 
 def add_scalebar(ax, length_m, lat):
@@ -428,59 +469,87 @@ def draw_overview(df, zframes):
     axL.imshow(plt.imread(src))
     axL.set_axis_off()
     axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=11)
-    axL.text(0.5, -0.02, "Reproduced from Budnik, Walker \\& Menking (2010), "
+    axL.text(0.5, -0.02, "Reproduced from Budnik, Walker & Menking (2010), "
              "Fig. 3.10,\nNatural Resource Inventory of Dutchess County, NY.",
              transform=axL.transAxes, ha="center", va="top", fontsize=7,
              color="0.3")
 
-    # -- (b) OSM + faults + site boxes --
+    # -- (b) roads + rivers + faults + county outline + site boxes --
     axR.set_xlim(left, right)
     axR.set_ylim(bottom, top)
     axR.set_aspect("equal")
     axR.set_axis_off()
-    add_basemap_safe(axR)
+    # colour basemap with labelled highways / county roads
+    add_basemap_safe(axR, source=cx.providers.CartoDB.Voyager)
 
+    # rivers (TIGER linear water); Wappinger Creek emphasised
+    for seg, name in load_rivers():
+        rx, ry = zip(*[merc(lo, la) for lo, la in seg])
+        wapp = "wappinger" in name.lower()
+        axR.plot(rx, ry, color="#2b6fb0", lw=1.3 if wapp else 0.5,
+                 alpha=0.9 if wapp else 0.6, zorder=3)
+
+    # county outline
+    for ring in load_county_outline():
+        ox, oy = zip(*[merc(lo, la) for lo, la in ring])
+        axR.plot(ox, oy, color="black", lw=1.4, zorder=6)
+
+    # faults (thin, black)
     if vec:
         for i, (fid, coords) in enumerate(vec.items()):
             fx, fy = zip(*[merc(lo, la) for lo, la in coords])
-            axR.plot(fx, fy, color="#7a1010", lw=2.6, solid_capstyle="round",
+            axR.plot(fx, fy, color="black", lw=1.6, solid_capstyle="round",
                      zorder=5, label="High-angle fault (Budnik et al. 2010)"
                      if i == 0 else None)
         faultsrc = "traced"
     elif ras is not None:
         _, ink_rgba, rext = ras
         axR.imshow(ink_rgba, extent=[rext[0], rext[1], rext[2], rext[3]],
-                   origin="upper", interpolation="bilinear", zorder=4)
-        axR.plot([], [], color="#5a3d1e", lw=2,
-                 label="Budnik et al. 2010 line-work")
+                   origin="upper", interpolation="bilinear", zorder=5)
+        axR.plot([], [], color="black", lw=1.6, label="Budnik faults")
         faultsrc = "raster"
     else:
         for i, (fid, coords) in enumerate(site_fault_lines(df, zframes).items()):
             fx, fy = zip(*[merc(lo, la) for lo, la in coords])
-            axR.plot(fx, fy, color="#7a1010", lw=2, ls=(0, (7, 4)), zorder=5,
+            axR.plot(fx, fy, color="black", lw=1.6, ls=(0, (7, 4)), zorder=5,
                      label="Fault (survey-located)" if i == 0 else None)
         faultsrc = "survey"
 
+    # highlighted site boxes with labels above
     for site, zs in SITE_ZONES.items():
         sp = pd.concat([zframes[z] for z in zs])
         sx, sy = zip(*[merc(lo, la) for lo, la in zip(sp["lon"], sp["lat"])])
         sx, sy = np.array(sx), np.array(sy)
         pad = (top - bottom) * 0.012
-        axR.add_patch(plt.Rectangle((sx.min() - pad, sy.min() - pad),
-                                    np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad,
-                                    fill=False, edgecolor="black", lw=1.6,
+        x0, y0 = sx.min() - pad, sy.min() - pad
+        w, h = np.ptp(sx) + 2 * pad, np.ptp(sy) + 2 * pad
+        axR.add_patch(plt.Rectangle((x0, y0), w, h, facecolor="yellow",
+                                    alpha=0.35, edgecolor="red", lw=1.8,
                                     zorder=8))
-        axR.annotate(f"Site {site}", (np.mean(sx), sy.max()),
-                     textcoords="offset points", xytext=(6, 6), fontsize=10,
-                     fontweight="bold", zorder=9,
-                     bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="0.4",
-                               alpha=0.9))
+        axR.annotate(f"Site {site}", (x0 + w / 2, y0 + h),
+                     textcoords="offset points", xytext=(0, 6), ha="center",
+                     va="bottom", fontsize=10, fontweight="bold", zorder=9,
+                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="red",
+                               alpha=0.95))
 
-    axR.legend(loc="upper left", fontsize=8, framealpha=0.9).set_zorder(10)
-    add_scalebar(axR, _round_scale((right - left) * 0.5
-                 * math.cos(math.radians(clat))), clat)
-    north_arrow(axR)
-    axR.set_title("(b) Faults on OpenStreetMap, study reaches boxed", fontsize=11)
+    # wappinger creek label (largest Wappinger segment midpoint)
+    wapp = [s for s, n in load_rivers() if "wappinger crk" == n.lower()]
+    if wapp:
+        seg = max(wapp, key=len)
+        mlo, mla = seg[len(seg) // 2]
+        mx, my = merc(mlo, mla)
+        axR.annotate("Wappinger Creek", (mx, my), fontsize=8, color="#1c4e82",
+                     style="italic", zorder=9, rotation=60,
+                     ha="center", va="center")
+
+    from matplotlib.lines import Line2D
+    handles = [
+        Line2D([0], [0], color="black", lw=1.6, label="High-angle fault (Budnik et al. 2010)"),
+        Line2D([0], [0], color="#2b6fb0", lw=1.3, label="River / stream (Wappinger Creek bold)"),
+    ]
+    axR.legend(handles=handles, loc="upper left", fontsize=8,
+               framealpha=0.9).set_zorder(10)
+    axR.set_title("(b) Faults, roads and rivers; study reaches boxed", fontsize=11)
 
     fig.tight_layout(pad=0.4)
     out = FIG / "overview.png"
