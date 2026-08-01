@@ -15,6 +15,35 @@ This is an Overleaf-synced git repo based on the kourgeorge/arxiv-style template
 - `~/papers/manuscript_tex/main.tex` + `media/` — a raw, unstyled pandoc dump of the docx (pandoc preamble, no bibliography markup). Useful as a text/equation reference; do not build on it. The extracted `media/image1-5.png` are the docx-embedded (lower-quality) figures.
 - `~/papers/academic-research-skills/` — the ARS skill suite (academic-paper, academic-paper-reviewer, deep-research, academic-pipeline). Most relevant modes for this project: `format-convert` (docx→LaTeX), `revision`, `citation-check`, `lit-review`. Invoke via the installed `academic-paper` skill or `/ars-*` commands.
 
+## Analysis pipeline (`src/`, this repo)
+
+The statistics and figures are regenerated from source data by a Python
+pipeline in `src/` (see `src/README.md`). Set up with a venv at `.venv/`
+(gitignored) and the packages listed in `src/README.md`, then:
+
+- `.venv/bin/python src/stats.py` → corrected Table 1 (`figures/table1_corrected.tex`, `\input` by main.tex)
+- `.venv/bin/python src/figures.py` → `figures/chloride.png` (Fig 5) + `figures/zone_ec.png` (a stats figure, not yet used in the paper)
+- `.venv/bin/python src/maps.py` → `figures/overview.png` + `figures/site{1,2,3}.png` (Figs 1–4; fetches OSM basemap tiles, needs internet)
+
+Data lives in `data/` (`salinity-dataset.xlsx`, `chloride-dataset.xlsx`), copied
+from the WappingersCreekResearch repo. `src/wappingers.py` is the shared loader
+and defines the zone row-slices and the five upstream/downstream contrasts.
+
+**Key correction:** the original R `statistics.R` used `t = (x̄₂−x̄₁)/(s₂/√n₂)`,
+a one-sample-style statistic that inflated t. `src/stats.py` replaces it with a
+two-sample **Welch** t-test on raw µS/cm (matching what the Methods prose
+claims), plus a Mann-Whitney check, and fixes a row-40 double-count between
+Zones 3-3/3-4. Corrected result: only the two clean fault crossings (Contrasts
+B, E) are significant (p<0.001); D, A, C are not. This matches the abstract's
+"two of three" framing; the paper's conclusion is unchanged. `stats.py` prints
+a `pub. t` column that exactly reproduces the original published Table 1 for
+an auditable before/after.
+
+**Site-map caveat:** points, colors, zone boxes, and contrast arrows are
+data-derived, but the fault-trace band is approximated from the `InFault`
+points and is schematic — the real traces came from the Budnik et al. 2010
+geologic map and should be digitized before final submission.
+
 ## Research code, data, and figures
 
 https://github.com/taddyb/WappingersCreekResearch (clone as needed) holds everything behind the figures/statistics, and is cited in the paper's Data Availability statement:

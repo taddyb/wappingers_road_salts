@@ -74,7 +74,7 @@ For our study we selected three segments of Wappinger Creek, a tributary to the 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.55\linewidth]{figures/fig1_overview.png}
+	\includegraphics[width=0.55\linewidth]{figures/overview.png}
 	\caption{An at-large overview of our three sites within Wappinger Creek, NY. Each site is marked by a dashed black box, with the points representing the reach-scale normalized conductivity values that will be gone into more detail in later figures.}
 	\label{fig:overview}
 \end{figure}
@@ -99,10 +99,13 @@ The specific conductivity was normalized using mean/standard deviation normaliza
 	\label{eq:normalization}
 \end{equation}
 
-Next, we separated specific conductivity samples into zones specific to where geologic interactions occurred (intersecting with the stream by either fault or a side-stream influence). After breaking up the data into different groups to account for the fault interactions, we ran applied a Student's T-Test (Equation~\ref{eq:ttest}) to evaluate the difference in means of conductivity upstream and downstream of the faults. We selected T-Testing due to its common usage when working with small datasets.
+Next, we separated specific conductivity samples into zones specific to where geologic interactions occurred (intersecting with the stream by either fault or a side-stream influence). After breaking the data into groups to account for the fault interactions, we applied a two-sample Welch $t$-test (Equation~\ref{eq:ttest}) to evaluate the difference in means of conductivity upstream and downstream of each feature. Welch's form of the $t$-test does not assume equal variances between the two zones, which is appropriate here given the unequal zone sample sizes and spreads; we selected $t$-testing for its common use with small datasets.
 
+% TODO (revision outline): add a paragraph justifying the spatial-independence
+% assumption for a t-test on sequential samples, and the two-day Site 3 handling.
 \begin{equation}
-	t = \frac{\overline{x}_{2} - \overline{x}_{1}}{s_{2}/\sqrt{n}}
+	t = \frac{\overline{x}_{2} - \overline{x}_{1}}
+	         {\sqrt{\dfrac{s_{1}^{2}}{n_{1}} + \dfrac{s_{2}^{2}}{n_{2}}}}
 	\label{eq:ttest}
 \end{equation}
 
@@ -117,7 +120,7 @@ Site 1 was split into two zones (Zone 1-1 and Zone 1-2), with a single contrast 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.62\linewidth]{figures/fig2_site1.png}
+	\includegraphics[width=0.62\linewidth]{figures/site1.png}
 	\caption{A map of Site 1, and the surrounding topography. Each zone, labeled via site number -- zone number is represented via black rectangles, and each contrast is labeled via a blue letter with the comparison shown using blue arrows.}
 	\label{fig:site1}
 \end{figure}
@@ -126,7 +129,7 @@ Site 2 (Figure~\ref{fig:site2}) has one contrast (Contrast B) between two zones 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.52\linewidth]{figures/fig3_site2.png}
+	\includegraphics[width=0.52\linewidth]{figures/site2.png}
 	\caption{A map of Site 2, and the surrounding topography. Each zone, labeled via site number -- zone number is represented via black rectangles, and each contrast is labeled via a blue letter with the comparison shown using blue arrows.}
 	\label{fig:site2}
 \end{figure}
@@ -135,7 +138,7 @@ Site 3 (Figure~\ref{fig:site3}) contains four zones (Zones 3-1, 3-2, 3-3, and 3-
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.85\linewidth]{figures/fig4_site3.png}
+	\includegraphics[width=0.85\linewidth]{figures/site3.png}
 	\caption{A map of Site 3, and the surrounding topography. Each zone, labeled via site number -- zone number is represented via black rectangles, and each contrast is labeled via a blue letter with the comparison shown using blue arrows. The black Z and Z' are the starting and ending points of the chloride study demonstrated in Figure~\ref{fig:chloride}. The red star indicates the sampling point from the 32-year dataset introduced by Kelly et al. 2019 \citep{kelly2019}.}
 	\label{fig:site3}
 \end{figure}
@@ -144,29 +147,22 @@ Chloride sampling showed chloride measurements consistent with the long-term stu
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.71\linewidth]{figures/fig5_chloride.png}
+	\includegraphics[width=0.71\linewidth]{figures/chloride.png}
 	\caption{Chloride measurements along zones 3-3 and 3-4 shown in relative distance from points Z to Z'. The red star indicates the sampling point from the 32-year dataset introduced by Kelly et al. 2019 \citep{kelly2019}.}
 	\label{fig:chloride}
 \end{figure}
 
 \subsection{Student T-Test}
 
-T-scores, sample-mean and standard deviation, and variance are described below in Table~\ref{tab:ttest}. Each contrast is a comparison of two sections of Wappinger Creek divided by a geological feature in the stream. $\mu_{0}$ represents the normalized specific conductance ($\mu$S/cm) value, while $\overline{X}$ is the sampled mean at the next zone. The standard deviation is represented by $s$, $n$ is the sample size of $\overline{X}$. Our significance threshold for $\alpha$ is 0.05, with four of the five contrasts crossing indicating a significant-correlation.
+Each contrast compares two adjacent reaches of Wappinger Creek separated by a geologic feature, tested with a two-sample Welch $t$-test on the raw specific-conductance measurements (Table~\ref{tab:ttest}). Here $\bar{x}_1$ and $\bar{x}_2$ are the upstream and downstream zone means ($\mu$S/cm), $n_1$ and $n_2$ their sample sizes, and the ``Boundary'' column records whether the separating feature is a mapped fault crossing or a tributary junction. At a significance threshold of $\alpha = 0.05$, the two fault crossings with the clearest geometry (Contrasts B and E) show significant increases in specific conductance ($p < 0.001$); the third fault crossing (Contrast D) and the two tributary-confounded contrasts (A and C) do not reach significance. A nonparametric Mann--Whitney $U$ test gives the same picture for B, D, and E.
 
+% Table auto-generated by src/stats.py from data/salinity-dataset.xlsx.
+% TODO (revision): add the Methods justification for Welch over the pooled
+% t-test and the spatial-independence caveat flagged in the revision outline.
 \begin{table}[htbp]
-	\caption{Student T-Test Results}
+	\caption{Two-sample Welch $t$-test results for each upstream/downstream contrast. Contrasts B and E (fault crossings) are significant at $\alpha = 0.05$.}
 	\centering
-	\begin{tabular}{cccccccc}
-		\toprule
-		Contrast & Compared Zones & $\overline{X}$ & $\mu_{0}$ & $s$ & $n$ & T-Score & $\alpha$-level significance \\
-		\midrule
-		A & 1-1, 1-2 & -0.4216 & 0.5270  & 0.2582 & 5  & -8.2158 & Yes \\
-		B & 2-1, 2-2 & 0.9022  & -0.7217 & 0.7213 & 8  & 6.3681  & Yes \\
-		C & 3-1, 3-2 & -0.5961 & 0.6702  & 0.9091 & 6  & -3.412  & Yes \\
-		D & 3-2, 3-3 & -0.6380 & -0.5961 & 0.7884 & 17 & -0.2192 & No  \\
-		E & 3-3, 3-4 & 0.4336  & -0.6380 & 0.5142 & 7  & 5.5135  & Yes \\
-		\bottomrule
-	\end{tabular}
+	\input{figures/table1_corrected.tex}
 	\label{tab:ttest}
 \end{table}
 
@@ -174,7 +170,11 @@ T-scores, sample-mean and standard deviation, and variance are described below i
 
 \subsection{Contrasts}
 
-Four out of five contrasts showed statistically significant changes in specific conductance. Two of the four statistically significant Contrasts were B and E from Zones 2 and 3, respectively. Each showed a statistically significant increase in specific conductance after fault line interactions at $\alpha$ = 0.05, indicating a likely increase in stream salinity. The other two statistically significant Contrasts, A and C showed observed decreases, but this does not contradict our main conclusion on the influence of faults alone because each of these contrasts also corresponded to the locations of active tributaries inputting water to the main stem of the creek, and measurements were taken during a rain event which occurred during sampling this day. The salinity levels for this section of the creek were between 50--100~$\mu$S/cm lower the measurements taken at other two sites. At Contrast C the active tributary measured nearly 150~$\mu$S/cm lower than the specific conductance measurements at Zones 3-1 and 3-2.
+% TODO (revision outline, Discussion 4.1): expand this paragraph (~150 words) --
+% confront the non-significant Contrast D directly (statistical power given n and
+% variance) and frame the two-of-three significant fault crossings as initial
+% evidence, per the revision plan.
+Two contrasts showed statistically significant changes in specific conductance: Contrasts B and E, from Sites 2 and 3 respectively. Each is a fault crossing, and each showed a statistically significant increase in specific conductance after the fault line interaction at $\alpha$ = 0.05, indicating a likely increase in stream salinity. The tributary-confounded contrasts A and C both showed decreases in specific conductance that did not reach significance; in any case these do not bear on our main conclusion about faults, because each corresponded to the location of an active tributary inputting water to the main stem of the creek, and measurements at Site 1 were taken during a rain event that occurred during sampling that day. The salinity levels for this section of the creek were between 50--100~$\mu$S/cm lower than the measurements taken at the other two sites. At Contrast C the active tributary measured nearly 150~$\mu$S/cm lower than the specific conductance measurements at Zones 3-1 and 3-2.
 
 Of the three major intersections with fault lines observed in this study, which do not correspond to locations of active tributaries, two of the three show a significant increase (and the third a non-significant increase, Contrast D) in stream salinity ($\alpha$ = 0.05). Later additional observation of longitudinal chloride concentrations across Contrast E (Figure~\ref{fig:chloride}, Z to Z'), indicated the same strong contrasts associated spatially with mapped fault locations.
 
