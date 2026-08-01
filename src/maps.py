@@ -87,22 +87,46 @@ def load_county_outline():
 
 
 def load_rivers():
-    """TIGER linear-water segments as (points_lonlat, name), or []."""
+    """TIGER linear-water segments as lon/lat point lists, or []."""
     shp = DATA / "tiger" / "tl_2024_36027_linearwater.shp"
     if not shp.exists():
         return []
     import shapefile
 
     sf = shapefile.Reader(str(shp))
-    fld = [f[0] for f in sf.fields[1:]]
     out = []
-    for sh, rec in zip(sf.iterShapes(), sf.iterRecords()):
-        name = dict(zip(fld, rec)).get("FULLNAME", "") or ""
+    for sh in sf.iterShapes():
         parts = list(sh.parts) + [len(sh.points)]
         for i in range(len(parts) - 1):
             seg = sh.points[parts[i]:parts[i + 1]]
             if len(seg) >= 2:
-                out.append((seg, name))
+                out.append(seg)
+    return out
+
+
+def load_roads():
+    """TIGER highways and county roads as lon/lat point lists, or [].
+
+    Keeps primary/secondary roads (MTFCC S1100/S1200) and interstate / US /
+    state / county routes (RTTYP I/U/S/C); drops the ~11k local streets.
+    """
+    shp = DATA / "tiger" / "tl_2024_36027_roads.shp"
+    if not shp.exists():
+        return []
+    import shapefile
+
+    sf = shapefile.Reader(str(shp))
+    fld = [f[0] for f in sf.fields[1:]]
+    keep_m, keep_r = {"S1100", "S1200"}, {"I", "U", "S", "C"}
+    out = []
+    for sh, rec in zip(sf.iterShapes(), sf.iterRecords()):
+        d = dict(zip(fld, rec))
+        if d.get("MTFCC") in keep_m or d.get("RTTYP") in keep_r:
+            parts = list(sh.parts) + [len(sh.points)]
+            for i in range(len(parts) - 1):
+                seg = sh.points[parts[i]:parts[i + 1]]
+                if len(seg) >= 2:
+                    out.append(seg)
     return out
 
 
@@ -474,25 +498,27 @@ def draw_overview(df, zframes):
              transform=axL.transAxes, ha="center", va="top", fontsize=7,
              color="0.3")
 
-    # -- (b) roads + rivers + faults + county outline + site boxes --
+    # -- (b) clean vector map: roads + rivers + faults + county outline + sites --
     axR.set_xlim(left, right)
     axR.set_ylim(bottom, top)
     axR.set_aspect("equal")
     axR.set_axis_off()
-    # colour basemap with labelled highways / county roads
-    add_basemap_safe(axR, source=cx.providers.CartoDB.Voyager)
+    axR.set_facecolor("white")
 
-    # rivers (TIGER linear water); Wappinger Creek emphasised
-    for seg, name in load_rivers():
+    # highways and county roads (brown)
+    for seg in load_roads():
         rx, ry = zip(*[merc(lo, la) for lo, la in seg])
-        wapp = "wappinger" in name.lower()
-        axR.plot(rx, ry, color="#2b6fb0", lw=1.3 if wapp else 0.5,
-                 alpha=0.9 if wapp else 0.6, zorder=3)
+        axR.plot(rx, ry, color="#8a5a2b", lw=0.7, zorder=3)
 
-    # county outline
+    # rivers / streams (blue)
+    for seg in load_rivers():
+        rx, ry = zip(*[merc(lo, la) for lo, la in seg])
+        axR.plot(rx, ry, color="#2b6fb0", lw=0.6, alpha=0.8, zorder=3)
+
+    # county outline (dashed, lighter)
     for ring in load_county_outline():
         ox, oy = zip(*[merc(lo, la) for lo, la in ring])
-        axR.plot(ox, oy, color="black", lw=1.4, zorder=6)
+        axR.plot(ox, oy, color="0.45", lw=0.8, ls=(0, (6, 4)), zorder=6)
 
     # faults (thin, black)
     if vec:
@@ -532,20 +558,14 @@ def draw_overview(df, zframes):
                      bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="red",
                                alpha=0.95))
 
-    # wappinger creek label (largest Wappinger segment midpoint)
-    wapp = [s for s, n in load_rivers() if "wappinger crk" == n.lower()]
-    if wapp:
-        seg = max(wapp, key=len)
-        mlo, mla = seg[len(seg) // 2]
-        mx, my = merc(mlo, mla)
-        axR.annotate("Wappinger Creek", (mx, my), fontsize=8, color="#1c4e82",
-                     style="italic", zorder=9, rotation=60,
-                     ha="center", va="center")
-
     from matplotlib.lines import Line2D
     handles = [
-        Line2D([0], [0], color="black", lw=1.6, label="High-angle fault (Budnik et al. 2010)"),
-        Line2D([0], [0], color="#2b6fb0", lw=1.3, label="River / stream (Wappinger Creek bold)"),
+        Line2D([0], [0], color="black", lw=1.6,
+               label="High-angle fault (Budnik et al. 2010)"),
+        Line2D([0], [0], color="#8a5a2b", lw=1.2, label="Highway / county road"),
+        Line2D([0], [0], color="#2b6fb0", lw=1.2, label="River / stream"),
+        Line2D([0], [0], color="0.45", lw=0.8, ls=(0, (6, 4)),
+               label="Dutchess County"),
     ]
     axR.legend(handles=handles, loc="upper left", fontsize=8,
                framealpha=0.9).set_zorder(10)
