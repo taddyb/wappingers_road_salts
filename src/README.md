@@ -49,14 +49,16 @@ original published $t$ values exactly, so the correction is auditable.
 
 ## Faults
 
-- **Overview (Figure 1)** — the regional faults come from
-  `data/clipped_budnik.tif`: Budnik et al. (2010) Fig. 3.10, georeferenced in
-  QGIS, clipped to the Dutchess County polygon, and exported in EPSG:3857
-  (Web Mercator). `maps.load_budnik_raster()` reads it, drops the black
-  clip-fill / white background / blue river to transparency, recolours the
-  interior line-work brown, and overlays it on OSM at the same extent as the
-  source panel (1:1). If the `.tif` is absent, the overview falls back to a
-  survey-trace layout.
+- **Overview (Figure 1)** — two panels. Panel (a) reproduces the published
+  Budnik et al. (2010) Fig. 3.10 (`figures/budnik_faultmap.png`, with the
+  thrust-fault areas + legend) with attribution. Panel (b) overlays the mapped
+  high-angle faults on OSM. Panel-(b) fault source, in priority order:
+  1. `data/faults_budnik2010.geojson` — 42 fault lines traced in QGIS over the
+     georeferenced raster. Traced as `data/fault_lines.gpkg` (EPSG:3857) and
+     converted to lon/lat GeoJSON with:
+     `ogr2ogr -f GeoJSON -t_srs EPSG:4326 data/faults_budnik2010.geojson data/fault_lines.gpkg`
+  2. else the clipped raster line-work (`data/clipped_budnik.tif`);
+  3. else survey-located traces.
 - **Site maps** — the fault line is drawn through each site's `InFault == yes`
   survey points (real GPS crossings), attributed to Budnik et al. 2010.
 
