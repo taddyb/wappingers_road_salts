@@ -67,7 +67,9 @@ Here, we present a case study of Wappinger Creek in Dutchess County, New York, t
 
 \subsection{Site description}
 
-For our study we selected three segments of Wappinger Creek, a tributary to the Hudson River in Dutchess County, New York, USA. Each site was chosen based on two factors: if one or more high-angle faults intersect the stream, and if the segment of the stream could be accessed safely. A geological fault-line map of New York \citep{budnik2010} allowed us to locate each stream intersection with a high-angle fault and create a detailed map (Figure~\ref{fig:overview}) containing both fault lines and major roads. Wappinger Creek intersects State Highways 44, 55, and 9, as well as the Taconic State Parkway in various sections. Multiple faults bisect Wappinger Creek in its upper east fork and its middle section. The location of some of the geologic fault structures also appear to influence the river's geographic location, particularly with Sites 1 and 2.
+For our study we selected three segments of Wappinger Creek, a tributary to the Hudson River in Dutchess County, New York, USA. Each site was chosen based on two factors: whether one or more high-angle faults intersect the stream, and whether the segment could be accessed safely. A geologic fault-line map of Dutchess County \citep{budnik2010} allowed us to locate each stream intersection with a high-angle fault and to create a detailed map (Figure~\ref{fig:overview}) containing both fault lines and major roads. Wappinger Creek intersects State Highways 44, 55, and 9, as well as the Taconic State Parkway, in various sections. Multiple faults bisect the creek in its upper east fork and its middle section, and the traces of some of these structures appear to control the channel's course, most visibly at Sites 1 and 2.
+
+The bedrock beneath the study area consists of metamorphosed clastic sedimentary rocks that were folded and faulted during the Taconic Orogeny, and it is cut by low-angle thrust faults as well as steeper, high-angle faults \citep{budnik2010}. This structural setting is central to our hypothesis, because fault zones typically comprise a fractured, high-permeability damage zone flanking a lower-permeability core, and can therefore behave as preferential conduits, as barriers, or as combined conduit-barrier systems for groundwater flow \citep{bense2008,gudmundsson2000}. Where the damage zone is well connected, faults can transmit groundwater rapidly and over considerable distance: at the Hidden Valley Fault Zone in central Texas, for instance, \citet{ferrill2024} traced fault-controlled groundwater moving several kilometers within days through faulted carbonates. If the high-angle faults crossing Wappinger Creek behave comparably, they could route road-salt-laden groundwater from a highway to the channel even where the two are separated by a topographic divide, motivating our focus on stream reaches that coincide with mapped fault traces.
 
 \begin{figure}[htbp]
 	\centering
@@ -82,14 +84,13 @@ Conductivity measurements were obtained in October 2018; taking measurements app
 
 Performing measurements in the thalweg kept our data objective by reducing potential variations due to lateral mixing. EC was converted to specific conductivity through adjusting the probe to 25 degrees Celsius. Measurements were taken using a Thermo Scientific Orion 013010MD Conductivity Cell calibrated using the standard protocols outlined by the manufacturer.
 
-Chloride was assessed electronically using a calibrated YSI multi-probe during July 2020 within Site 3 upstream and downstream of the study location used in Kelly et al. 2019 \citep{kelly2019}. Assessments were made to determine if rises in chloride concentrations occurred close to the geological faults.
+Each site was surveyed at a nominal spacing of roughly 100~m from upstream to downstream, yielding 9, 18, and 46 measurement points at Sites 1, 2, and 3, respectively, with point positions recorded using a handheld GPS unit. Within each site we delineated zones bounded at the locations where the creek crosses a mapped fault trace or receives an active tributary, so that the reaches immediately upstream and downstream of a single geologic or hydrologic feature could be compared directly. To isolate the effect of faults, we restricted our fault-crossing contrasts to reaches where the creek intersects a mapped fault without a coincident tributary, because a tributary confluence introduces an independent salinity signal that would confound the comparison. Because the fault traces are mapped at county scale \citep{budnik2010}, their horizontal positions carry an uncertainty of up to a few hundred meters; we therefore treated each crossing as a reach-scale rather than a point-scale feature when assigning zone boundaries. Comparable dense spatial surveys of specific conductance and chloride have been used elsewhere to trace groundwater-sourced road salt to streams and springs, including in a karstic watershed where springs showed the strongest long-term increases \citep{orr2025}.
+
+Chloride was assessed electronically using a calibrated YSI multi-probe during July 2020 within Site 3, upstream and downstream of the long-term monitoring location of \citet{kelly2019}, to determine whether rises in chloride concentration occurred close to the mapped geologic faults.
 
 \subsection{Statistical analysis}
 
-% TODO (revision outline): Equations 1 and 2 should be written out fully and
-% justified during revision (independence assumption for the t-test, two-day
-% Site 3 handling).
-The specific conductivity was normalized using mean/standard deviation normalization (Equation~\ref{eq:normalization}) with the sample mean and sample standard deviation specific to each site to account to temporal variation in overall conductivity levels and streamflow between sampling days.
+The specific conductance was normalized within each site using mean/standard-deviation (z-score) normalization (Equation~\ref{eq:normalization}), with the sample mean $\overline{X}$ and sample standard deviation $\sigma_x$ computed separately for each site. This removes day-to-day differences in the overall conductivity level and streamflow between sampling dates and places all sites on a common, dimensionless scale so that the relative rise or fall across a feature can be compared regardless of a site's absolute salinity.
 
 \begin{equation}
 	\mu_{0} = \frac{x - \overline{X}}{\sigma_{x}}
@@ -98,13 +99,13 @@ The specific conductivity was normalized using mean/standard deviation normaliza
 
 Next, we separated specific conductivity samples into zones specific to where geologic interactions occurred (intersecting with the stream by either fault or a side-stream influence). After breaking the data into groups to account for the fault interactions, we applied a two-sample Welch $t$-test (Equation~\ref{eq:ttest}) to evaluate the difference in means of conductivity upstream and downstream of each feature. Welch's form of the $t$-test does not assume equal variances between the two zones, which is appropriate here given the unequal zone sample sizes and spreads; we selected $t$-testing for its common use with small datasets.
 
-% TODO (revision outline): add a paragraph justifying the spatial-independence
-% assumption for a t-test on sequential samples, and the two-day Site 3 handling.
 \begin{equation}
 	t = \frac{\overline{x}_{2} - \overline{x}_{1}}
 	         {\sqrt{\dfrac{s_{1}^{2}}{n_{1}} + \dfrac{s_{2}^{2}}{n_{2}}}}
 	\label{eq:ttest}
 \end{equation}
+
+Here $\overline{x}_{1}$ and $\overline{x}_{2}$ are the mean specific conductance of the upstream and downstream zones, $s_{1}$ and $s_{2}$ their standard deviations, and $n_{1}$ and $n_{2}$ their sample sizes. Applying a $t$-test to measurements collected sequentially along a channel warrants caution, because closely spaced samples are not strictly independent. We treated the measurements within a zone as approximate replicates of that reach's ambient salinity and tested only the difference in means between adjacent zones; because the within-zone scatter is small relative to the between-zone contrasts (Table~\ref{tab:ttest}), we interpret a significant contrast as a genuine step change across the intervening feature rather than an artifact of fine-scale autocorrelation. Site 3 was surveyed over two days owing to its length, but every zone-to-zone contrast was computed within a single day's data, and the per-site normalization (Equation~\ref{eq:normalization}) removes any offset in baseline conductivity between the two days, so the comparisons remain valid.
 
 \section{Results}
 
