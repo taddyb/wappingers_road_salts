@@ -508,7 +508,7 @@ def draw_overview(df, zframes):
     axL.imshow(plt.imread(src))
     axL.set_axis_off()
     axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=11)
-    axL.text(0.5, -0.02, "Reproduced from Budnik, Walker & Menking (2010), "
+    axL.text(0.5, -0.02, "Taken directly from Budnik, Walker & Menking (2010), "
              "Fig. 3.10,\nNatural Resource Inventory of Dutchess County, NY.",
              transform=axL.transAxes, ha="center", va="top", fontsize=7,
              color="0.3")
@@ -580,7 +580,7 @@ def draw_overview(df, zframes):
             # Site 1's label collides with Site 3 if centred above; shift it
             # to the upper-left of the box, away from Site 3 (to its right).
             axR.annotate(f"Site {site}", (x0, y0 + h),
-                         textcoords="offset points", xytext=(-6, 6), ha="right",
+                         textcoords="offset points", xytext=(6, 6), ha="right",
                          va="bottom", fontsize=10, fontweight="bold", zorder=9,
                          bbox=dict(boxstyle="round,pad=0.2", fc="white",
                                    ec="red", alpha=0.95))
