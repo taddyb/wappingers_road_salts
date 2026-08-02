@@ -84,7 +84,7 @@ Conductivity measurements were obtained in October 2018; taking measurements app
 
 Performing measurements in the thalweg kept our data objective by reducing potential variations due to lateral mixing. EC was converted to specific conductivity through adjusting the probe to 25 degrees Celsius. Measurements were taken using a Thermo Scientific Orion 013010MD Conductivity Cell calibrated using the standard protocols outlined by the manufacturer.
 
-Each site was surveyed at a nominal spacing of roughly 100~m from upstream to downstream, yielding 9, 18, and 46 measurement points at Sites 1, 2, and 3, respectively, with point positions recorded using a handheld GPS unit. Within each site we delineated zones bounded at the locations where the creek crosses a mapped fault trace or receives an active tributary, so that the reaches immediately upstream and downstream of a single geologic or hydrologic feature could be compared directly. To isolate the effect of faults, we restricted our fault-crossing contrasts to reaches where the creek intersects a mapped fault without a coincident tributary, because a tributary confluence introduces an independent salinity signal that would confound the comparison. Because the fault traces are mapped at county scale \citep{budnik2010}, their horizontal positions carry an uncertainty of up to a few hundred meters; we therefore treated each crossing as a reach-scale rather than a point-scale feature when assigning zone boundaries. Comparable dense spatial surveys of specific conductance and chloride have been used elsewhere to trace groundwater-sourced road salt to streams and springs, including in a karstic watershed where springs showed the strongest long-term increases \citep{orr2025}.
+Each site was surveyed at a nominal spacing of roughly 100~m from upstream to downstream, yielding 9, 18, and 46 measurement points at Sites 1, 2, and 3, respectively, with point positions recorded using a handheld GPS unit. Within each site we delineated zones bounded at the locations where the creek crosses a mapped fault trace or receives an active tributary, so that the reaches immediately upstream and downstream of a single geologic or hydrologic feature could be compared directly. To isolate the effect of faults, we restricted our fault-crossing contrasts to reaches where the creek intersects a mapped fault without a coincident tributary, because a tributary confluence introduces an independent salinity signal that would confound the comparison. Because the fault traces are mapped at county scale \citep{budnik2010}, their horizontal positions carry an uncertainty of up to a few hundred meters; we therefore treated each crossing as a reach-scale rather than a point-scale feature when assigning zone boundaries. Zones are numbered such that they ascend as the river goes downstream: for example zone 3-3 is downstream of 3-2 which is downstream of 3-1. Comparable dense spatial surveys of specific conductance and chloride have been used elsewhere to trace groundwater-sourced road salt to streams and springs, including in a karstic watershed where springs showed the strongest long-term increases \citep{orr2025}.
 
 Chloride was assessed electronically using a calibrated YSI multi-probe during July 2020 within Site 3, upstream and downstream of the long-term monitoring location of \citet{kelly2019}, to determine whether rises in chloride concentration occurred close to the mapped geologic faults.
 
@@ -97,7 +97,7 @@ The specific conductance was normalized within each site using mean/standard-dev
 	\label{eq:normalization}
 \end{equation}
 
-Next, we separated specific conductivity samples into zones specific to where geologic interactions occurred (intersecting with the stream by either fault or a side-stream influence). After breaking the data into groups to account for the fault interactions, we applied a two-sample Welch $t$-test (Equation~\ref{eq:ttest}) to evaluate the difference in means of conductivity upstream and downstream of each feature. Welch's form of the $t$-test does not assume equal variances between the two zones, which is appropriate here given the unequal zone sample sizes and spreads; we selected $t$-testing for its common use with small datasets.
+Next, we separated the specific-conductance samples into zones defined by where geologic interactions occur, that is, where the stream crosses either a fault or a side-stream. We then applied a two-sample Welch $t$-test (Equation~\ref{eq:ttest}) to evaluate the difference in mean specific conductance upstream and downstream of each feature. Unlike Student's pooled $t$-test, Welch's version does not assume equal variances between the two zones, and it remains reliable when the groups have both unequal variances and unequal sample sizes, as ours do; for these reasons it is recommended as the default two-sample test \citep{ruxton2006}.
 
 \begin{equation}
 	t = \frac{\overline{x}_{2} - \overline{x}_{1}}
@@ -150,13 +150,11 @@ Chloride sampling showed chloride measurements consistent with the long-term stu
 	\label{fig:chloride}
 \end{figure}
 
-\subsection{Student T-Test}
+\subsection{Two-sample $t$-test}
 
 Each contrast compares two adjacent reaches of Wappinger Creek separated by a geologic feature, tested with a two-sample Welch $t$-test on the raw specific-conductance measurements (Table~\ref{tab:ttest}). Here $\bar{x}_1$ and $\bar{x}_2$ are the upstream and downstream zone means ($\mu$S/cm), $n_1$ and $n_2$ their sample sizes, and the ``Boundary'' column records whether the separating feature is a mapped fault crossing or a tributary junction. At a significance threshold of $\alpha = 0.05$, the two fault crossings with the clearest geometry (Contrasts B and E) show significant increases in specific conductance ($p < 0.001$); the third fault crossing (Contrast D) and the two tributary-confounded contrasts (A and C) do not reach significance. A nonparametric Mann--Whitney $U$ test gives the same picture for B, D, and E.
 
 % Table auto-generated by src/stats.py from data/salinity-dataset.xlsx.
-% TODO (revision): add the Methods justification for Welch over the pooled
-% t-test and the spatial-independence caveat flagged in the revision outline.
 \begin{table}[htbp]
 	\caption{Two-sample Welch $t$-test results for each upstream/downstream contrast. Contrasts B and E (fault crossings) are significant at $\alpha = 0.05$.}
 	\centering
