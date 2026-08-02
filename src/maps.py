@@ -576,11 +576,20 @@ def draw_overview(df, zframes):
         axR.add_patch(plt.Rectangle((x0, y0), w, h, facecolor="yellow",
                                     alpha=0.35, edgecolor="red", lw=1.8,
                                     zorder=8))
-        axR.annotate(f"Site {site}", (x0 + w / 2, y0 + h),
-                     textcoords="offset points", xytext=(0, 6), ha="center",
-                     va="bottom", fontsize=10, fontweight="bold", zorder=9,
-                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="red",
-                               alpha=0.95))
+        if site == 1:
+            # Site 1's label collides with Site 3 if centred above; shift it
+            # to the upper-left of the box, away from Site 3 (to its right).
+            axR.annotate(f"Site {site}", (x0, y0 + h),
+                         textcoords="offset points", xytext=(-6, 6), ha="right",
+                         va="bottom", fontsize=10, fontweight="bold", zorder=9,
+                         bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                                   ec="red", alpha=0.95))
+        else:
+            axR.annotate(f"Site {site}", (x0 + w / 2, y0 + h),
+                         textcoords="offset points", xytext=(0, 6), ha="center",
+                         va="bottom", fontsize=10, fontweight="bold", zorder=9,
+                         bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                                   ec="red", alpha=0.95))
 
     from matplotlib.lines import Line2D
     handles = [
