@@ -142,13 +142,15 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   was done as an undergraduate at Marist (University). He now works at FBF
   Engineering. Write it as affiliation "Marist University, Poughkeepsie, NY" with a
   footnote "Present address: FBF Engineering". Keep the email. Names and order are
-  unchanged (editor rule). Zion Klos's department and ORCIDs: still to come from the
-  author; leave a `% TODO` comment, no visible placeholder text.
+  unchanged (editor rule). ORCIDs are filled in. Departments are not required by the
+  editor (names, emails, affiliations only), so none are given. Tadd's Marist
+  affiliation is approved by the author (the work was his Marist senior thesis).
 - **Instruments (author, 2026-11-08):** SC survey used a Thermo Scientific Orion
   013010MD conductivity cell, "calibrated successfully using the standard protocols
-  outlined by the manufacturer". Name the manufacturer. Accuracy spec is being looked
-  up (`docs/instrument_specs.md`). The 2020 chloride YSI multi-probe model is still
-  unknown.
+  outlined by the manufacturer". Name the manufacturer. Author re-confirmed: Orion cell in
+  2018 (SC), YSI Pro Series 1005 chloride ISE in 2020. The Orion Star meter model is
+  unknown; quote the spec shared by the compatible meters (`docs/instrument_specs.md`).
+  No TODO remains for this.
 - **Wastewater (author, 2026-11-08; findings in `docs/wwtp_kelly2008.md`,
   `data/wwtp_facilities.csv`):** Millbrook STP (NY0025429, East Branch) is upstream
   of all sites: ~2.4 km along the channel above Site 3, 15.3 km above Site 1 and
