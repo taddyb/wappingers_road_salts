@@ -1,0 +1,78 @@
+
+=== S1  (n=9, length 677 m) ===
+  0 bp: RSS=1.543  BIC=-11.48  bps=[]
+  1 bp: RSS=1.165  BIC=-9.61  bps=[226]
+  2 bp: RSS=1.141  BIC=-5.40  bps=[255, 522]
+  BIC-selected breakpoints: 0
+  Ref. features (along-channel m): InFault pts=[428, 514, 592, 649, 677]; polyline x trace=[379]; closest approach to any trace=0 m (at 379 m); boundaries={'1-1|1-2': 363}
+  Reported model: 1 bp [NOT BIC-selected; best 1-bp fit shown]; segment slopes (uS/cm/km): [2.2, -1.9]
+  bp1 = 226 m  profile95 [202, 591]  boot95 [202, 591]  slope change -4.12 uS/cm/km; fitted change over +/-100 m +0.02 uS/cm
+      nearest InFault pt 203 m (at 428); along-channel to polyline-trace crossing 153 m; straight-line to nearest trace 137 m; to zone boundaries {tributary A: 138}
+  PELT (pen=0.885) change-in-mean at [] m, steps [] uS/cm
+
+=== S2  (n=18, length 7066 m) ===
+  0 bp: RSS=13.411  BIC=0.48  bps=[]
+  1 bp: RSS=4.706  BIC=-12.59  bps=[2355]
+  2 bp: RSS=3.951  BIC=-9.95  bps=[2317, 5908]
+  BIC-selected breakpoints: 1
+  Ref. features (along-channel m): InFault pts=[0, 563, 878, 4166, 6191, 7066]; polyline x trace=[1046, 5763]; closest approach to any trace=0 m (at 1046 m); boundaries={'2-1|2-2': 3993}
+  Reported model: 1 bp; segment slopes (uS/cm/km): [0.1, 1.6]
+  bp1 = 2355 m  profile95 [2004, 3207]  boot95 [1327, 3384]  slope change +1.51 uS/cm/km; fitted change over +/-100 m +0.16 uS/cm
+      nearest InFault pt 1477 m (at 878); along-channel to polyline-trace crossing 1310 m; straight-line to nearest trace 389 m; to zone boundaries {fault B: 1638}
+  PELT (pen=2.551) change-in-mean at [2617, 3588, 5948] m, steps [1.45, 2.25, 3.32] uS/cm
+
+=== S3-19Oct  (n=20, length 2130 m) ===
+  0 bp: RSS=16.882  BIC=2.60  bps=[]
+  1 bp: RSS=12.529  BIC=2.63  bps=[1707]
+  2 bp: RSS=11.545  BIC=6.98  bps=[279, 768]
+  BIC-selected breakpoints: 0
+  Ref. features (along-channel m): InFault pts=[973, 1056, 1175]; polyline x trace=[759]; closest approach to any trace=0 m (at 759 m); boundaries={'3-1|3-2': 419, '3-2|3-3': 922}
+  Reported model: 1 bp [NOT BIC-selected; best 1-bp fit shown]; segment slopes (uS/cm/km): [-5.2, -0.1]
+  bp1 = 1707 m  profile95 [619, 1873]  boot95 [227, 1873]  slope change +5.15 uS/cm/km; fitted change over +/-100 m -0.53 uS/cm
+      nearest InFault pt 532 m (at 1175); along-channel to polyline-trace crossing 948 m; straight-line to nearest trace 237 m; to zone boundaries {tributary C: 1288, fault D: 785}
+  PELT (pen=5.397) change-in-mean at [630, 1249] m, steps [-4.12, -3.41] uS/cm
+
+=== S3-26Oct-upper  (n=14, length 1077 m) ===
+  0 bp: RSS=10.002  BIC=0.57  bps=[]
+  1 bp: RSS=5.026  BIC=-3.79  bps=[252]
+  2 bp: RSS=3.367  BIC=-4.11  bps=[300, 459]
+  BIC-selected breakpoints: 2
+  Ref. features (along-channel m): InFault pts=[]; polyline x trace=[]; closest approach to any trace=13 m (at 1077 m); boundaries={'3-1|3-2': 773}
+  Reported model: 2 bp; segment slopes (uS/cm/km): [-20.1, 1.1, -9.8]
+  bp1 = 300 m  profile95 [247, 353]  boot95 [177, 335]  slope change +21.16 uS/cm/km; fitted change over +/-100 m -1.90 uS/cm
+      nearest InFault pt nan m (at nan); along-channel to polyline-trace crossing nan m; straight-line to nearest trace 562 m; to zone boundaries {tributary C: 473}
+  bp2 = 459 m  profile95 [406, 794]  boot95 [406, 830]  slope change -10.85 uS/cm/km; fitted change over +/-100 m -0.87 uS/cm
+      nearest InFault pt nan m (at nan); along-channel to polyline-trace crossing nan m; straight-line to nearest trace 453 m; to zone boundaries {tributary C: 314}
+  PELT (pen=3.639) change-in-mean at [204, 545, 773] m, steps [-4.77, -1.56, -3.17] uS/cm
+
+=== S3-26Oct-lower  (n=12, length 1299 m) ===
+  0 bp: RSS=16.160  BIC=8.54  bps=[]
+  1 bp: RSS=4.557  BIC=-1.68  bps=[194]
+  2 bp: RSS=3.615  BIC=0.51  bps=[192, 809]
+  BIC-selected breakpoints: 1
+  Ref. features (along-channel m): InFault pts=[804, 930]; polyline x trace=[523]; closest approach to any trace=0 m (at 523 m); boundaries={'3-3|3-4': 716}
+  Reported model: 1 bp; segment slopes (uS/cm/km): [21.9, 0.2]
+  bp1 = 194 m  profile95 [194, 304]  boot95 [194, 300]  slope change -21.70 uS/cm/km; fitted change over +/-100 m +2.20 uS/cm
+      nearest InFault pt 611 m (at 804); along-channel to polyline-trace crossing 330 m; straight-line to nearest trace 123 m; to zone boundaries {fault E: 522}
+  PELT (pen=4.022) change-in-mean at [266] m, steps [2.39] uS/cm
+
+=== Chloride  (n=18, length 2351 m) ===
+  0 bp: RSS=1284.721  BIC=82.60  bps=[]
+  1 bp: RSS=379.847  BIC=66.45  bps=[467]
+  2 bp: RSS=308.825  BIC=68.51  bps=[501, 1618]
+  BIC-selected breakpoints: 1
+  Ref. features (along-channel m): InFault pts=[126, 222, 342, 2087, 2205]; polyline x trace=[1809]; closest approach to any trace=0 m (at 1809 m); boundaries={}
+  Reported model: 1 bp; segment slopes (mg/L/km): [53.0, -15.1]
+  bp1 = 467 m  profile95 [400, 567]  boot95 [308, 800]  slope change -68.16 mg/L/km; fitted change over +/-100 m +3.79 mg/L
+      nearest InFault pt 125 m (at 342); along-channel to polyline-trace crossing 1342 m; straight-line to nearest trace 303 m; to zone boundaries {}
+  PELT (pen=237.034) change-in-mean at [384, 1021] m, steps [16.56, -18.61] mg/L
+
+D (S3-19Oct InFault): projected onto Cl path at [126, 222, 342] m along Cl transect (perpendicular offsets [4, 15, 14] m)
+
+E (S3-26Oct-lower InFault): projected onto Cl path at [2087, 2205] m along Cl transect (perpendicular offsets [17, 23] m)
+Cl points downstream of first E InFault point (2087 m): 2 of 18; downstream of last E InFault pt (2205 m): 2; Cl transect ends at 2351 m
+Cl path crosses a digitized trace at 1809 m; points downstream of it: 4 of 18
+Cl peak 50.0 mg/L at 474 m (possible fault?): nearest D InFault pt 133 m (Euclid.), farthest 333 m; nearest mapped trace 307 m
+Cl peak 36.25 mg/L at 690 m (nan): nearest D InFault pt 315 m (Euclid.), farthest 506 m; nearest mapped trace 391 m
+Cl peak 40.0 mg/L at 959 m (possible fault?): nearest D InFault pt 468 m (Euclid.), farthest 664 m; nearest mapped trace 293 m
+Cl last 5 points: 1800m:15.0, 1960m:17.5, 2075m:15.0, 2238m:13.75, 2351m:15.0

@@ -7,17 +7,20 @@ the Welch significance, a mapped high-angle fault, a colour bar, a legend, a
 north arrow, and a scale bar.
 
 Fault handling (hybrid, per the project decision):
-  * Site maps -- the fault is anchored to this site's ``InFault`` survey points
-    (where the crossing was actually observed in the field), attributed to
-    Budnik et al. 2010.
+  * Site maps -- (submitted version) the fault line is fitted through this site's
+    ``InFault`` survey points. NOTE: those points were flagged in the field because
+    the surveyors believed they lay just downstream of the fault; they are not
+    observed fault positions. The revised figures (rev_figures.py) instead draw the
+    digitized Budnik et al. (2010) traces.
   * Overview -- one fault trace per site, located from that site's ``InFault``
     GPS points and extended along the fitted strike (see ``site_fault_lines``).
-    This pins each Budnik-mapped crossing precisely, rather than tracing the
+    This is a rough guide; it does not trace the
     1:340,000 county figure (whose raster georeferencing carries multi-km error
     at overview scale). To use hand-digitized county traces instead, drop a
     ``data/faults_budnik2010.csv`` (columns: fault_id, lon, lat) and it wins.
 
-Run:  .venv/bin/python src/maps.py
+Run:  .venv/bin/python src/maps.py            (submitted figures -> overview.png, site{1,2,3}.png)
+      .venv/bin/python src/maps.py --revised  (revision figures -> rev_*.png, see rev_figures.py)
 """
 
 from pathlib import Path
@@ -393,11 +396,12 @@ def load_budnik_faults():
 def site_fault_lines(df, zframes, extend_m=2600):
     """Fault trace per site, located from that site's ``InFault`` GPS points.
 
-    The crossing position and local strike come from the field survey (real
-    coordinates); the line is extended ``extend_m`` past the outermost fault
+    The line position and local strike are fitted to the flagged survey points
+    (which mark where the surveyors believed they were just downstream of the
+    fault, not observed fault positions); the line is extended ``extend_m`` past the outermost fault
     point along the fitted strike so it reads as a regional trace. These are
     the high-angle faults mapped by Budnik et al. (2010); the survey points
-    pin their creek crossings precisely.
+    are a rough guide only.
     """
     import pandas as pd
 
@@ -661,6 +665,11 @@ def _draw_overview_fallback(df, zframes):
 
 
 if __name__ == "__main__":
+    import sys
+    if "--revised" in sys.argv:  # revision round: figures/rev_overview.png, rev_site{1,2,3}.png
+        import rev_figures
+        rev_figures.main(["overview", "1", "2", "3"])
+        sys.exit(0)
     df = load_salinity()
     zframes = zone_frames(df)
     cstats = {r["contrast"]: r for r in analyze()}

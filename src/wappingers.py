@@ -11,7 +11,7 @@ The concatenation order (5, 3, 4) reproduces the ``rbind(siteFive, siteThree,
 siteFour)`` in the original ``statistics.R`` so that the zone row-slices below
 line up with the published analysis.
 
-Zones are contiguous reaches separated by a geologic feature (a fault crossing
+Zones are contiguous reaches separated by a geologic feature (a fault zone
 or a tributary junction). The row ranges below are the author's spatial zone
 boundaries, carried over verbatim from ``statistics.R`` -- with one correction:
 the original ``siteThreeZoneFour = merged[40:46]`` (R, 1-based inclusive)
@@ -195,3 +195,123 @@ def load_chloride():
     step[1:] = haversine_m(lat[:-1], lon[:-1], lat[1:], lon[1:])
     data["distance_m"] = step.cumsum()
     return data
+
+
+# ---------------------------------------------------------------------------
+# Revision-round helpers (WP0). Nothing above this line was changed.
+# ---------------------------------------------------------------------------
+import numpy as np
+
+REPO = Path(__file__).resolve().parent.parent
+FAULTS_GEOJSON = DATA / "faults_budnik2010.geojson"
+ROADS_SHP = DATA / "tiger" / "tl_2024_36027_roads.shp"
+METRIC_CRS = "EPSG:32618"  # UTM 18N
+
+# Single-day transects: name -> (paper site, field site, flip). ``flip`` means
+# the field row order runs DOWNSTREAM->UPSTREAM and must be reversed so each
+# transect is ordered upstream->downstream. Orientation rule: the creek flows
+# W/SW; site 3 (19 Oct) rows 1->20 and site 4 rows 1->12 run downstream and the
+# end of site 3 is 18 m from the start of site 4. Field site 5 re-surveys the
+# reach of site 3 gps 1-8 in the opposite direction (site-5 row 1 sits next to
+# site-3 gps 8; site-5 row 11 next to site-3 gps 1), so it is reversed.
+# Sites 1 and 2 follow zone order (zone x-1 upstream of x-2 by construction).
+TRANSECTS = {
+    "S1":            dict(paper_site=1, field_site=1, flip=False, date="2018-09-28"),
+    "S2":            dict(paper_site=2, field_site=2, flip=False, date="2018-10-05"),
+    "S3-19Oct":      dict(paper_site=3, field_site=3, flip=False, date="2018-10-19"),
+    "S3-26Oct-upper": dict(paper_site=3, field_site=5, flip=True,  date="2018-10-26"),
+    "S3-26Oct-lower": dict(paper_site=3, field_site=4, flip=False, date="2018-10-26"),
+}
+
+
+def haversine_m(lat1, lon1, lat2, lon2):
+    r = 6371000.0
+    p1, p2 = np.radians(lat1), np.radians(lat2)
+    a = (np.sin((p2 - p1) / 2) ** 2
+         + np.cos(p1) * np.cos(p2) * np.sin(np.radians(lon2 - lon1) / 2) ** 2)
+    return 2 * r * np.arcsin(np.sqrt(a))
+
+
+def cumulative_distance_m(lat, lon):
+    lat, lon = np.asarray(lat, float), np.asarray(lon, float)
+    d = np.zeros(len(lat))
+    d[1:] = haversine_m(lat[:-1], lon[:-1], lat[1:], lon[1:])
+    return d.cumsum()
+
+
+# 0-based row ranges in the *paper-site* frame (see zones()), per zone.
+_ZONE_ROWS = {
+    1: {"1-1": [range(0, 4)], "1-2": [range(4, 9)]},
+    2: {"2-1": [range(0, 10)], "2-2": [range(10, 18)]},
+    3: {"3-2": [range(0, 3), range(20, 23)], "3-1": [range(3, 20)],
+        "3-3": [range(23, 40)], "3-4": [range(40, 46)]},
+}
+
+
+def tidy_salinity(df=None):
+    """One row per SC measurement with date, transect, zone, along-channel
+    distance (upstream->downstream within each single-day transect).
+
+    Columns: paper_site, field_site, field_row (1-based gps_point), date,
+    transect, dist_m, lat, lon, EC, Temp, zone (NaN if the point belongs to no
+    zone, i.e. site-4 row 12 which statistics.R's slice drops), InFault.
+    """
+    if df is None:
+        df = load_salinity()
+    site1, site2, site3 = site_frames(df)
+    frames = {1: site1, 2: site2, 3: site3}
+    zone_of = {}  # (paper_site, row) -> zone
+    for ps, zd in _ZONE_ROWS.items():
+        for z, rngs in zd.items():
+            for rg in rngs:
+                for i in rg:
+                    zone_of[(ps, i)] = z
+    parts = []
+    for ps, fr in frames.items():
+        fr = fr.copy()
+        fr["paper_row"] = np.arange(len(fr))
+        fr["zone"] = [zone_of.get((ps, i)) for i in fr["paper_row"]]
+        fr["paper_site"] = ps
+        parts.append(fr)
+    t = pd.concat(parts, ignore_index=True)
+    t["date"] = pd.to_datetime(t["Date"]).dt.strftime("%Y-%m-%d")
+    t["field_row"] = pd.to_numeric(t["gps_point"]).astype(int)
+    out = []
+    for name, cfg in TRANSECTS.items():
+        s = t[(t.paper_site == cfg["paper_site"]) & (t.field_site == cfg["field_site"])]
+        s = s.sort_values("field_row", ascending=not cfg["flip"]).copy()
+        s["transect"] = name
+        s["dist_m"] = cumulative_distance_m(s["lat"], s["lon"])
+        out.append(s)
+    o = pd.concat(out, ignore_index=True)
+    return o[["paper_site", "field_site", "field_row", "date", "transect", "dist_m",
+              "lat", "lon", "EC", "Temp", "zone", "InFault"]]
+
+
+def load_faults_metric():
+    import geopandas as gpd
+    return gpd.read_file(FAULTS_GEOJSON).to_crs(METRIC_CRS)
+
+
+def load_roads_metric(major=("S1100", "S1200")):
+    import geopandas as gpd
+    r = gpd.read_file(ROADS_SHP)
+    return r[r.MTFCC.isin(major)].to_crs(METRIC_CRS)
+
+
+def points_metric(lat, lon):
+    import geopandas as gpd
+    return gpd.GeoSeries(gpd.points_from_xy(lon, lat), crs="EPSG:4326").to_crs(METRIC_CRS)
+
+
+def nearest_dist_m(lat, lon, lines):
+    """Distance (m) from each lon/lat point to the nearest geometry in ``lines``
+    (a GeoDataFrame already in METRIC_CRS)."""
+    u = lines.geometry.union_all()
+    return np.array([p.distance(u) for p in points_metric(lat, lon)])
+
+
+def chloride_transect():
+    """Chloride transect without the 'side tributary' row (as in figures.py)."""
+    c = load_chloride()
+    return c[~c["Notes"].fillna("").str.contains("side tributary")].reset_index(drop=True)

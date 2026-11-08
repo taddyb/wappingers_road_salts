@@ -1,7 +1,9 @@
 .venv/
 __pycache__/
 *.pyc
-main.pdf
+*.pdf
+!template.pdf
+!orcid.pdf
 *.aux
 *.bbl
 *.blg

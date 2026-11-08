@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The LaTeX manuscript for **"Evidence of fault zone transport of road-salt contaminated groundwater from highways to streams"** — a study of Wappingers Creek (Dutchess County, NY) showing that mapped high-angle geologic fault zones spatially coincide with statistically significant increases in stream specific conductance, implicating faults as preferential conduits for road-salt-contaminated groundwater.
 
-This is an Overleaf-synced git repo based on the kourgeorge/arxiv-style template. The author has LibreOffice only (no MS Word), so **LaTeX/Overleaf is the sole collaboration format**. The manuscript has been converted from the Word source into `main.tex` (+ `references.bib`, `figures/`); the next phase is revising it per editor requirements.
+This is an Overleaf-synced git repo based on the kourgeorge/arxiv-style template. The author has LibreOffice only (no MS Word), so **LaTeX/Overleaf is the sole collaboration format**. The manuscript has been converted from the Word source into what is now `original.tex` (+ `references.bib`, `figures/`). It was submitted (ID 101225) and is now in reviewer revision: see **Revision round 1** below.
 
 ## Source-of-truth documents (outside this repo)
 
@@ -21,7 +21,7 @@ The statistics and figures are regenerated from source data by a Python
 pipeline in `src/` (see `src/README.md`). Set up with a venv at `.venv/`
 (gitignored) and the packages listed in `src/README.md`, then:
 
-- `.venv/bin/python src/stats.py` → corrected Table 1 (`figures/table1_corrected.tex`, `\input` by main.tex)
+- `.venv/bin/python src/stats.py` → corrected Table 1 (`figures/table1_corrected.tex`, `\input` by original.tex)
 - `.venv/bin/python src/figures.py` → `figures/chloride.png` (Fig 5, the Z→Z' chloride transect)
 - `.venv/bin/python src/maps.py` → `figures/overview.png` + `figures/site{1,2,3}.png` (Figs 1–4; fetches OSM basemap tiles, needs internet)
 
@@ -58,16 +58,25 @@ Paper structure facts needed to interpret code and figures together: 3 study sit
 
 ## Building the LaTeX
 
-- Local toolchain: **tectonic only** (`~/.cargo/bin/tectonic`); no pdflatex/latexmk/bibtex installed. Build with `tectonic main.tex` (tectonic runs the bibliography passes automatically and fetches packages on demand).
+- Local toolchain: **tectonic only** (`~/.cargo/bin/tectonic`); no pdflatex/latexmk/bibtex installed. Build with `tectonic revisions.tex` (or `original.tex`, `response_to_reviewers.tex`) (tectonic runs the bibliography passes automatically and fetches packages on demand).
 - Overleaf compiles the repo directly; keep the repo self-contained (all `.sty`, figures, and `.bib` committed) so both toolchains work.
 - Template usage (from the arxiv-style README): `\documentclass{article}` + `\usepackage{arxiv}`; the style already loads `geometry` and `fancyhdr` — do not re-import them. Citations via `natbib` with `\bibliographystyle{unsrtnat}` and `references.bib`; the paper's existing references use numeric `[n]` order-of-appearance style, which `unsrtnat` matches.
 - For an eventual arXiv submission, the generated `.bbl` must be inlined into the `.tex` (arXiv doesn't run bibtex); see README.md steps.
 
 ## Conventions
 
-- `main.tex` is the working document; `template.tex` is the untouched style example (its sample bib entries were replaced, so it no longer builds standalone — that's fine).
+- `revisions.tex` is the working document; `template.tex` is the untouched style example (its sample bib entries were replaced, so it no longer builds standalone — that's fine).
 - Citations are numeric via `\usepackage[numbers]{natbib}` + `unsrtnat`; `references.bib` is ordered so numbering matches the docx's [1]–[27]. Author names in the bib are kept exactly as the docx prints them (initials, `and others` for "et al.") — don't expand names without verifying against the actual paper.
-- Known source-document defects (garbled Introduction opening, corrupted §3.1 sentence, duplicated [27] citation, terse equations) are marked with `% TODO (revision outline)` comments in `main.tex` — they are deliberate faithful-conversion artifacts to be fixed in the revision phase, not conversion bugs.
-- The author block in `main.tex` is a placeholder (docx had none): second-author email, departments, and ORCIDs still need filling in.
+- Known source-document defects (garbled Introduction opening, corrupted §3.1 sentence, duplicated [27] citation, terse equations) are marked with `% TODO (revision outline)` comments in `original.tex` — they are deliberate faithful-conversion artifacts to be fixed in the revision phase, not conversion bugs.
+- The author block is a placeholder (docx had none): second-author email, departments, and ORCIDs still need filling in.
 - All 27 existing references must land in `references.bib`; new citations from the revision outline's ledger must be **verified against the actual paper (open the DOI, read it) before insertion** — the outline explicitly warns these were surfaced by web search.
 - Content changes should trace to either the docx or the revision outline; don't invent new data, results, or numbers — the expansion is context/framing/synthesis only.
+
+## Revision round 1 (reviewer comments, Nov 2026)
+
+- `original.tex` is the submitted manuscript, frozen as the latexdiff baseline. Never edit it, or the files it uses (`references.bib`, `figures/{overview,site1,site2,site3,chloride}.png`, `figures/table1_corrected.tex`).
+- `revisions.tex` is the revised manuscript. It uses `references_revised.bib` and `figures/rev_*`, `table1_revised*.tex` and `appendix_data.tex`.
+- `response_to_reviewers.tex` is the point-by-point letter. `\plan{}` and `\tbd{}` mark internal notes; set `\showplanfalse` for submission.
+- `docs/revision_plan.md` holds every author decision and the binding rules for agents (framing, citation budget ≥30% from 2022–2026, InFault meaning, no fault band). Read it before any revision work.
+- Highlighted changes: `latexdiff original.tex revisions.tex > diff.tex && tectonic diff.tex`. Both tectonic and latexdiff are installed via Homebrew.
+
