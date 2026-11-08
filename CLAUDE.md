@@ -79,4 +79,5 @@ Paper structure facts needed to interpret code and figures together: 3 study sit
 - `response_to_reviewers.tex` is the point-by-point letter. `\plan{}` and `\tbd{}` mark internal notes; set `\showplanfalse` for submission.
 - `docs/revision_plan.md` holds every author decision and the binding rules for agents (framing, citation budget ≥30% from 2022–2026, InFault meaning, no fault band). Read it before any revision work.
 - Highlighted changes: `latexdiff original.tex revisions.tex > diff.tex && tectonic diff.tex`. Both tectonic and latexdiff are installed via Homebrew.
+- Letter line numbers: the letter cites `{L123}` = line numbers in `revisions_diff.pdf`, driven by `\linelabel{L:key}` markers in `revisions.tex` (lineno is loaded there). After editing `revisions.tex`, run `.venv/bin/python src/letter_linerefs.py` (regenerates `revisions_diff.tex/.pdf` and the committed `letter_linerefs.tex`), then rebuild the letter. Quote manuscript text in the letter with `\mq{}` and cite with `\Ln{key}`.
 

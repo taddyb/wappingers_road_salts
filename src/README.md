@@ -87,3 +87,14 @@ TIGER linear water omits the creek along Site 2 (survey points up to 1.4 km from
 `rev_figures.nhd_network()` snaps flowline ends within 25 m into a graph. Wappinger Creek = all flowlines named Wappinger Creek or East Branch Wappinger Creek (asserted to be one connected network that reaches the Hudson). "Other major streams" = the six longest named streams (excluding the Hudson, the Wappinger system and the Delaware Aqueduct), each reduced to its largest connected piece after bridging gaps by shortest path (<= 3 km). `fig_overview()` asserts every 2018 SC point and 2020 chloride point is within 150 m of the Wappinger line. Roads remain TIGER (`data/tiger`).
 
 **Hudson River polygon (Fig 1b).** `data/nhd/nhd_area_hudson.geojson` = NHD "Area - Large Scale" (layer 9, FTYPE 460 StreamRiver kept), queried in four latitude strips for lon -74.12..-73.80, lat 41.45..42.01 (fields GNIS_NAME, FTYPE, AREASQKM), retrieved 2026-11-08 from `https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/9/query`. `data/nhd/nhd_waterbody_dutchess.geojson` = NHD "Waterbody - Large Scale" (layer 12), same date/bbox as the flowlines; its FTYPE 493 Estuary polygon covers the tidal Hudson south of Poughkeepsie. `rev_figures.hudson_polygons()` unions both. (Layer 9 rejects queries that request REACHCODE/FCODE; request only GNIS_NAME, FTYPE, AREASQKM.)
+
+## Line-number references in the response letter
+
+`response_to_reviewers.tex` cites changes as `{L123}`: line numbers in the latexdiff highlighted-changes manuscript (`revisions_diff.pdf`). `revisions.tex` loads `lineno` and carries `\linelabel{L:key}` markers at the start of every passage the letter quotes. After editing `revisions.tex` (adding, moving or rewording quoted passages), run
+
+```
+.venv/bin/python src/letter_linerefs.py
+tectonic response_to_reviewers.tex
+```
+
+The script runs `latexdiff original.tex revisions.tex > revisions_diff.tex`, builds it with `tectonic --keep-intermediates`, reads each `\newlabel{L:key}{{N}...}` from the aux file, writes `letter_linerefs.tex` (`\Lref{L:key}` expands to N, or a bold `??` for an unknown key) and deletes the intermediate files. `letter_linerefs.tex` is committed so Overleaf builds the letter without running Python. In the letter, `\Ln{key}` prints `{L<N>}` and `\mq{...}` marks a verbatim quote from `revisions.tex`.
