@@ -103,6 +103,12 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   ~1,300–1,450, Results ~900–1,000, Discussion ~1,900–2,100 (adds Limitations and
   the test design), Conclusions ~350–450. **Final ≥5,300 for margin.** Each text WP
   reports its section counts with the same counting script (WP6 re-checks).
+- **Site 2 boundary (author, 2026-11-08): RESOLVED.** "The site 2 original comparison
+  was where the river had a 90 degree sudden break indicating preferential flow along
+  a fault line." This is in §2.2 and R2.4, framed as a field interpretation of channel
+  geometry: the mapped crossings at ~1.0/5.8 km don't coincide with the bend, and a
+  bend does not show groundwater flow along the fault. Only the chloride-method TBD
+  remains.
 - **Word count after WP4 (2026-11-08):** the author confirmed that the requirement is
   ≥5,000 words in the main body, excluding the abstract and references, and that
   6,000+ is comfortable. Strict count (also excluding captions, tables, equations and
