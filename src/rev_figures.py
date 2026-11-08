@@ -281,6 +281,85 @@ def base_axes(ax, xy, pad_frac=0.28, min_half=None, aspect_w_over_h=1.0):
     return (mx - hw, mx + hw, my - hh, my + hh)
 
 
+from matplotlib.path import Path as _MP
+
+_SHIELD = _MP([(-0.9, 0.9), (0.9, 0.9), (0.97, 0.25), (0.7, -0.35), (0, -1.0), (-0.7, -0.35), (-0.97, 0.25),
+               (-0.9, 0.9)], [_MP.MOVETO] + [_MP.LINETO] * 6 + [_MP.CLOSEPOLY])
+_IBAND = _MP([(-0.9, 0.9), (0.9, 0.9), (0.93, 0.5), (-0.93, 0.5), (-0.9, 0.9)],
+             [_MP.MOVETO] + [_MP.LINETO] * 3 + [_MP.CLOSEPOLY])
+_NYBOX = _MP([(-1.3, 0.8), (1.3, 0.8), (1.3, -0.8), (-1.3, -0.8), (-1.3, 0.8)],
+             [_MP.MOVETO] + [_MP.LINETO] * 3 + [_MP.CLOSEPOLY])
+
+
+def route_shield(ax, x, y, kind, num, ms=15, zorder=11):
+    """Route marker drawn from matplotlib paths (MUTCD-style approximations).
+    kind: 'I' interstate (blue body, red band, white number), 'US' (white shield, black outline),
+    'NY' (white rounded box, black outline)."""
+    if kind == "I":
+        ax.plot(x, y, marker=_SHIELD, ms=ms + 2.5, mfc="white", mec="white", ls="", zorder=zorder)
+        ax.plot(x, y, marker=_SHIELD, ms=ms, mfc="#1F4E9A", mec="#1F4E9A", ls="", zorder=zorder + 0.1)
+        ax.plot(x, y, marker=_IBAND, ms=ms, mfc="#C8102E", mec="#C8102E", ls="", zorder=zorder + 0.2)
+        ax.annotate(num, (x, y), xytext=(0, -1.2), textcoords="offset points", ha="center", va="center", fontsize=6.3,
+                    fontweight="bold", color="white", zorder=zorder + 0.3)
+    elif kind == "US":
+        ax.plot(x, y, marker=_SHIELD, ms=ms, mfc="white", mec="black", mew=1.3, ls="", zorder=zorder)
+        ax.annotate(num, (x, y), xytext=(0, 0.8), textcoords="offset points", ha="center", va="center", fontsize=6.5,
+                    fontweight="bold", color="black", zorder=zorder + 0.3)
+    else:
+        ax.plot(x, y, marker=_NYBOX, ms=ms * 1.05, mfc="white", mec="black", mew=1.2, ls="", zorder=zorder)
+        ax.annotate(num, (x, y), xytext=(0, 0), textcoords="offset points", ha="center", va="center", fontsize=6.5,
+                    fontweight="bold", color="black", zorder=zorder + 0.3)
+
+
+SHIELDS = {"I-84": ("I", "84"), "US 9": ("US", "9"), "US 44": ("US", "44"), "NY 82": ("NY", "82"),
+           "NY 22": ("NY", "22")}
+
+
+def route_label(ax, x, y, short, ms=15):
+    if short in SHIELDS:
+        route_shield(ax, x, y, *SHIELDS[short], ms=ms)
+    else:
+        ax.annotate(short, (x, y), fontsize=4.8, color="#333333", ha="center", va="center", zorder=11,
+                    bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.75))
+
+
+from matplotlib.legend_handler import HandlerBase
+from matplotlib.patches import PathPatch as _PP
+
+
+class RouteKey:
+    """Legend handle for a route-shield type: 'I', 'US' or 'NY' (shape only, no number)."""
+    def __init__(self, kind):
+        self.kind = kind
+
+
+class HandlerRoute(HandlerBase):
+    def create_artists(self, legend, orig, xdescent, ydescent, width, height, fontsize, trans):
+        cx, cy = xdescent + width / 2, ydescent + height / 2
+        hh = height * 0.95
+
+        def poly(path, sx, sy, **kw):
+            v = path.vertices * [sx, sy] + [cx, cy]
+            return _PP(_MP(v, path.codes), transform=trans, **kw)
+        if orig.kind == "I":
+            return [poly(_SHIELD, hh, hh, fc="#1F4E9A", ec="#1F4E9A", lw=0.5),
+                    poly(_IBAND, hh, hh, fc="#C8102E", ec="#C8102E", lw=0.5)]
+        if orig.kind == "US":
+            return [poly(_SHIELD, hh, hh, fc="white", ec="black", lw=1.1)]
+        return [poly(_NYBOX, hh * 0.8, hh * 0.8, fc="white", ec="black", lw=1.1)]
+
+
+ROUTE_KEYS = {"I": "Interstate", "US": "US route", "NY": "NY State route"}
+
+
+def route_entries(kinds):
+    return [(RouteKey(k), ROUTE_KEYS[k]) for k in ("I", "US", "NY") if k in kinds]
+
+
+def _legend(ax_or_fig, h, lab, **kw):
+    return ax_or_fig.legend(h, lab, handler_map={RouteKey: HandlerRoute()}, **kw)
+
+
 def draw_context(ax, ext, F_web, band_web, streams=True, roads=True, label_roads=True, lw_scale=1.0, label_frac={}):
     """Fault traces, NHD streams, TIGER major roads, clipped to extent."""
     bbox = box(ext[0], ext[2], ext[1], ext[3])
@@ -304,8 +383,7 @@ def draw_context(ax, ext, F_web, band_web, streams=True, roads=True, label_roads
                     continue
                 longest = max(parts, key=lambda p: p.length)
                 pt = longest.interpolate(label_frac.get(short, 0.3), normalized=True)
-                ax.annotate(short, (pt.x, pt.y), fontsize=7, color="white", fontweight="bold", ha="center",
-                            va="center", zorder=5, bbox=dict(boxstyle="round,pad=0.15", fc=ROAD, ec="white", lw=0.6))
+                route_label(ax, pt.x, pt.y, short, ms=17)
     inb = F_web[F_web.intersects(bbox)]
     draw_lines(ax, inb.intersection(bbox), color="black", lw=1.9, zorder=4, path_effects=halo(3.6))
 
@@ -359,12 +437,49 @@ def common_legend(fig, first=(), extra=()):
     return h, lab
 
 
+WWTP_FILE = DATA / "wwtp_facilities.csv"   # EPA ECHO facility locations (not surveyed outfalls)
+WWTP_LABEL = "Wastewater facility"
+WWTP_COLOR = "#332288"
+WWTP_SHORT = {"NY0025429": "Millbrook STP", "NY0218944": "Stratford Farms STP", "NY0218952": "Ennis MHP WWTP",
+              "NY0077593": "Valley Dale STP", "NY0264989": "Titusville WWTP", "NY0099279": "NYSP Troop K"}
+
+
+def wwtp_points(ext):
+    """Facilities inside ext=(x0, x1, y0, y1) (web m): list of (short name, x, y)."""
+    d = pd.read_csv(WWTP_FILE)
+    xy = pts_web(d.lat, d.lon)
+    out = []
+    for (_, r), (x, y) in zip(d.iterrows(), xy):
+        if ext[0] <= x <= ext[1] and ext[2] <= y <= ext[3]:
+            out.append((WWTP_SHORT.get(r.permit_id, r["name"]), x, y))
+    return out
+
+
+def draw_wwtp(ax, pts, label_off=None, size=8.5, labels=True):
+    label_off = label_off or {}
+    for nm, x, y in pts:
+        ax.plot(x, y, marker="s", ms=size, mfc=WWTP_COLOR, mec="white", mew=1.0, zorder=9, ls="")
+        if labels and nm in label_off:
+            dx, dy, ha = label_off[nm]
+            ax.annotate(nm, (x, y), xytext=(dx, dy), textcoords="offset points", fontsize=7.5, ha=ha,
+                        va="center", zorder=10, color=WWTP_COLOR, fontweight="bold",
+                        bbox=dict(boxstyle="round,pad=0.15", fc="white", ec=WWTP_COLOR, lw=0.7))
+
+
+def wwtp_entry():
+    return (Line2D([], [], marker="s", ls="", mfc=WWTP_COLOR, mec="white", ms=8), WWTP_LABEL)
+
+
+WWTP_OFF = {2: {"Stratford Farms STP": (-10, 0, "right"), "Ennis MHP WWTP": (-10, 0, "right"),
+                "Valley Dale STP": (-10, -14, "right"), "Titusville WWTP": (11, 0, "left")}}
+
+
 def survey_entry(label, marker="o"):
     return (Line2D([], [], marker=marker, ls="", mfc="0.55", mec="white", mew=0.8, ms=9 if marker == "o" else 10), label)
 
 
 def finish(fig, ax, h, lab, out, ncol=2, y=-0.005):
-    fig.legend(h, lab, loc="lower center", ncol=ncol, frameon=False, fontsize=7, bbox_to_anchor=(0.5, y))
+    fig.legend(h, lab, loc="lower center", ncol=ncol, frameon=False, fontsize=7, bbox_to_anchor=(0.5, y), handler_map={RouteKey: HandlerRoute()})
     fig.savefig(out, dpi=DPI, bbox_inches="tight", pad_inches=0.05)
     plt.close(fig)
     print("wrote", out.relative_to(REPO))
@@ -413,6 +528,15 @@ def fig_site(site):
     draw_context(ax, ext, F_web, band_web)
     channel_line(ax, ts)
     sc_markers(ax, ts, norm, by_day=False)
+    wp_all = wwtp_points(ext)
+    off_map = [w for w in wp_all if w[0] == "Valley Dale STP"]   # discharges to a tributary ~2 km away
+    wp = [w for w in wp_all if w[0] != "Valley Dale STP"]
+    print('  site', site, 'facilities in frame:', [w[0] for w in wp], '| off-map note:', [w[0] for w in off_map])
+    draw_wwtp(ax, wp, WWTP_OFF.get(site, {}))
+    for nm, x, y in off_map:
+        ax.annotate(nm + " \u2192", (ext[1], y), xytext=(-4, 0), textcoords="offset points", ha="right",
+                    va="center", fontsize=7.5, color=WWTP_COLOR, fontweight="bold", zorder=10,
+                    bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.85))
     g = ts[ts.transect == f"S{site}"]
     bt = {1: ("A", "1-1", "1-2", "28 Sep"), 2: ("B", "2-1", "2-2", "5 Oct")}[site]
     mid, tan = boundary_tick(g, bt[1], bt[2])
@@ -437,13 +561,13 @@ def fig_site(site):
     add_scalebar(ax, _round_scale((ext[1] - ext[0]) / 2 * math.cos(math.radians(lat0))), lat0)
     north_arrow(ax)
     sc_colorbar(fig, ax, norm)
-    extra = []
+    extra = ([wwtp_entry()] if wp else []) + route_entries({1: set(), 2: {'US'}}[site])
     if site == 2:
-        extra = [(Line2D([], [], marker="X", ls="", mfc="white", mec="black", mew=1.2, ms=9),
+        extra += [(Line2D([], [], marker="X", ls="", mfc="white", mec="black", mew=1.2, ms=9),
                   "Mapped trace crosses the surveyed channel (survey line)")]
     date = {1: "28 Sep 2018", 2: "5 Oct 2018"}[site]
     h, lab = common_legend(fig, [survey_entry(f"Survey point ({date})")], extra)
-    finish(fig, ax, h, lab, FIG / f"rev_site{site}.png")
+    finish(fig, ax, h, lab, FIG / f"rev_site{site}.png", ncol={1: 2, 2: 1}[site], y={1: -0.005, 2: -0.12}[site])
 
 
 def site2_note(g):
@@ -466,7 +590,7 @@ def _site2_marks(ax, g, F_m, lat0):
         w = gpd.GeoSeries([p], crs=METRIC_CRS).to_crs(WEB).iloc[0]
         km = line.project(p) * d_tot / line.length / 1000
         ax.plot(w.x, w.y, marker="X", ms=11, mfc="white", mec="black", mew=1.3, zorder=10)
-        ax.annotate(f"crossing {k}\n({km:.1f} km along survey)", (w.x, w.y), xytext=(48 if k == 1 else -48, -26 if k == 1 else 24),
+        ax.annotate(f"crossing {k}\n({km:.1f} km along survey)", (w.x, w.y), xytext=(48 if k == 1 else -48, 4 if k == 1 else 24),
                     textcoords="offset points", fontsize=7, ha="center", va="center", zorder=12,
                     bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.3", lw=0.7),
                     arrowprops=dict(arrowstyle="-", color="0.25", lw=0.7))
@@ -486,6 +610,8 @@ def _site3(ts, stats, norm, F_web, band_web, F_m, lat0):
     ax.set_xlim(ext[0], ext[1]); ax.set_ylim(ext[2], ext[3])
     draw_context(ax, ext, F_web, band_web, label_frac={"US 44": 0.55})
     channel_line(ax, ts)
+    print('  site 3 facilities in frame:', [w[0] for w in wwtp_points(ext)])
+    draw_wwtp(ax, wwtp_points(ext), {})
     c = chloride_transect()
     cxy = pts_web(c.lat, c.lon)
     ax.plot(cxy[:, 0], cxy[:, 1], color=OI["orange"], lw=5.5, alpha=0.65, zorder=5.2, solid_capstyle="round")
@@ -574,8 +700,9 @@ def _site3(ts, stats, norm, F_web, band_web, F_m, lat0):
     h, lab = common_legend(fig, [survey_entry("Survey point, 19 Oct 2018 (circle)"),
                                  survey_entry("Survey point, 26 Oct 2018 (triangle)", "^")], [
         (Line2D([], [], color=OI["orange"], lw=5.5, alpha=0.65), "Chloride transect Z\u2013Z\u2032 (20 Jul 2020)"),
-        (Line2D([], [], marker="*", ls="", mfc="red", mec="black", ms=12), "Kelly et al. (2019) long-term site")])
-    fig.legend(h, lab, loc="lower center", ncol=2, frameon=False, fontsize=7, bbox_to_anchor=(0.5, 0.0))
+        (Line2D([], [], marker="*", ls="", mfc="red", mec="black", ms=12), "Kelly et al. (2019) long-term site")]
+        + route_entries({"US", "NY"}))
+    fig.legend(h, lab, loc="lower center", ncol=2, frameon=False, fontsize=7, bbox_to_anchor=(0.5, 0.0), handler_map={RouteKey: HandlerRoute()})
     out = FIG / "rev_site3.png"
     fig.savefig(out, dpi=DPI)
     plt.close(fig)
@@ -698,16 +825,17 @@ def fig_overview():
         parts = [p for q in g[~g.is_empty] for p in getattr(q, "geoms", [q]) if p.geom_type == "LineString"]
         lg = max(parts, key=lambda p: p.length)
         pt = lg.interpolate(frac[short], normalized=True)
-        ax.annotate(short, (pt.x, pt.y), fontsize=7, color="white", fontweight="bold", ha="center", va="center",
-                    zorder=11, bbox=dict(boxstyle="round,pad=0.15", fc="#555555", ec="white", lw=0.6))
+        route_label(ax, pt.x, pt.y, short, ms=14)
+    wp = wwtp_points((left, right, bottom, top))
+    draw_wwtp(ax, wp, {"Millbrook STP": (9, -2, "left")}, size=6)
     add_scalebar(ax, 10000, lat0)
     h = [Line2D([], [], color="black", lw=1.4, path_effects=halo(2.4)),
          Line2D([], [], color=OI["blue"], lw=2.6), Line2D([], [], color=OI["sky"], lw=1.1),
          Line2D([], [], color="#6b6b6b", lw=1.5, path_effects=halo(2.8)),
-         Patch(fc="none", ec=OI["verm"], lw=2.2)]
+         Patch(fc="none", ec=OI["verm"], lw=2.2), wwtp_entry()[0]] + [e[0] for e in route_entries({"I", "US", "NY"})]
     lab = ["High-angle fault (Budnik et al. 2010)", "Wappinger Creek", "Other major streams",
-           "Major highway", "Study site"]
-    ax.legend(h, lab, loc="upper left", fontsize=7.5, framealpha=0.92).set_zorder(12)
+           "Major highway", "Study site", WWTP_LABEL] + [e[1] for e in route_entries({"I", "US", "NY"})]
+    ax.legend(h, lab, loc="upper center", bbox_to_anchor=(0.5, -0.012), ncol=3, fontsize=6.5, frameon=False, columnspacing=1.0, handlelength=1.6, handler_map={RouteKey: HandlerRoute()})
     ax.set_title("(b) Study area: faults, highways and streams", fontsize=10)
     fig.subplots_adjust(left=0.0, right=0.995, top=0.95, bottom=0.07, wspace=0.01)
     out = FIG / "rev_overview.png"

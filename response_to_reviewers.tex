@@ -16,7 +16,7 @@
 %   response  environment    our reply (draft until analysis is done)
 %   changes   environment    what changes in revisions.tex
 %   \plan{...}               INTERNAL planning note -- delete before submission
-%   \tbd{...}                number/text pending analysis (WP0) or author input
+%   \tbd{...}                text pending author input
 % Comment labels are given explicitly and follow the reviewers' numbering.
 % Set \showplanfalse to hide every planning note for the submitted version.
 % ---------------------------------------------------------------------------
@@ -74,32 +74,40 @@ changes are:
         significant increase in specific conductance, but it is gradual rather than abrupt,
         and no change point coincides with a mapped fault. The revised paper reports this
         plainly, sets out what a low-cost longitudinal survey can and cannot resolve, and
-        proposes a specific design for testing the fault-conduit hypothesis.
+        proposes a specific design for testing the fault-conduit hypothesis (Section~4.5).
   \item In re-examining the statistics as the reviewers asked, we found that three of the
         four Site~3 zones combined measurements from two survey days (19 and 26 October
-        2018) whose overall conductivity differed by 23--30\uScm. We now compare zones
+        2018) whose conductivity differed by 23.5--29.7\uScm. We now compare zones
         only within a single survey day. This substantially reduces the Site~3 fault-crossing
         step (Contrast~E), which we report transparently. The same re-examination showed
         that the 2020 chloride peaks lie near a different mapped fault (Contrast~D) rather
         than at Contrast~E, and we have corrected that attribution.
   \item We added change-point / segmented-regression analysis of specific conductance
-        against distance, an autocorrelation-adjusted assessment of the zone contrasts, an
-        expanded Table~1 (means $\pm$ SD, confidence intervals, degrees of freedom,
-        Mann--Whitney results), the same change-point analysis applied to the chloride
-        transect, and an appendix listing every measurement.
+        against distance (new Figure~6), an autocorrelation-adjusted assessment of the zone
+        contrasts, an expanded Table~1 (means $\pm$ SD, confidence intervals, degrees of
+        freedom, Mann--Whitney results), a new Table~2 (adjusted $p$-values and distance to
+        the nearest major road), the same change-point analysis applied to the chloride
+        transect, and an appendix (Appendix~A) listing every measurement.
   \item The z-score normalization has been removed; all analyses use specific conductance
         in \uScm.
   \item The Introduction is restructured to reach fault hydrogeology earlier, with the
         conduit--barrier literature for fractured crystalline and metamorphic rock
-        (including Caine et al., 1996, and Bense et al., 2013) and references for each
-        testable prediction.
-  \item A new Limitations section and an expanded discussion of alternative salt sources
-        (road proximity, developed land, wastewater and septic inputs, diffuse groundwater).
-  \item All figures revised as requested (contrast labels, flow direction, the Z--Z$'$
-        transect, survey-date symbology, simplified overview map). We found no citable
-        positional accuracy for the mapped faults, so their uncertainty is discussed in the
-        text rather than drawn as an error zone.
+        (including Caine et al., 1996, and Bense et al., 2013), a paragraph on tributary
+        mixing, and references for each testable prediction.
+  \item A new Limitations section (Section~4.4) and an expanded discussion of alternative
+        salt sources (Section~4.2: road proximity, developed land, wastewater plants,
+        diffuse groundwater). Permitted wastewater facilities are now shown on the maps
+        (Figures~1 and 3).
+  \item All six figures are revised or new (contrast labels, flow direction, the Z--Z$'$
+        transect, survey-date symbology and an inset, a simplified overview map, and a new
+        change-point figure). We found no citable positional accuracy for the mapped
+        faults, so their uncertainty is discussed in the text rather than drawn as an
+        error zone.
+  \item The management recommendation is replaced by a statement that mapped faults are at
+        most a candidate screening layer to be tested (Section~4.6), and references now
+        carry DOIs where they exist, with grouped citations sorted and compressed.
 \end{itemize}
+
 
 We were not able to collect additional field data for this revision. Where a reviewer's
 suggestion would require new measurements (discharge, geochemical tracers, repeated
@@ -110,8 +118,6 @@ future work.
 \noindent Sincerely,\\[0.5em]
 Tadd Bindas and Zion Klos
 
-\plan{D0(a) locked: within-day contrasts only. Preliminary numbers throughout this letter
-come from quick checks (docs/revision\_plan.md \S0, \S0b); replace with WP0 output.}
 
 \clearpage
 
@@ -126,10 +132,10 @@ addressed.
 \begin{response}
 We thank the Editor for this assessment. We have addressed every point raised by the
 reviewers, as detailed below, and provide a marked-up manuscript highlighting all changes.
-Author information is unchanged.
+Author names and order are unchanged; the affiliation of the first author is now given as
+Marist University, with his present address noted in a footnote.
 \end{response}
-\plan{Editor note 3 also asks us to complete any missing author info: fill in departments,
-emails, ORCIDs for the two existing authors (no additions/removals).}
+\plan{Editor note 3 asks us to complete missing author info. Still open: Zion Klos's department and both authors' ORCIDs (TODO comment in revisions.tex). Update this response once supplied.}
 
 % ===========================================================================
 \reviewer{1}
@@ -152,17 +158,19 @@ those changes, that the faults are hydraulically connected to the highways, or t
 salt rather than another source is responsible. We have followed each of the Reviewer's
 recommendations: the manuscript is now framed as a hypothesis-generating case study, and
 the title has been changed from a statement of evidence to the question the study poses;
-alternative sources are discussed in an expanded section; a new Limitations section lists
-the gaps explicitly; all maps are revised; and the conclusions are tempered throughout.
+alternative sources are discussed in an expanded section (Section~4.2); a new Limitations
+section (Section~4.4) lists the gaps explicitly; all maps are revised; and the conclusions
+are tempered throughout.
 \end{response}
 \begin{changes}
 Title changed to ``Do fault zones route road-salt-contaminated groundwater to streams? A
 Hudson Valley, NY Case Study''; Abstract, Introduction (final paragraph), Discussion and Conclusions rewritten
-in hypothesis-generating language; new Section~4.x ``Limitations''; expanded Section~4.2;
-Figures~1--5 revised.
+in hypothesis-generating language. Section~1: ``The study is a hypothesis-generating screening
+case study: it can show whether the predicted pattern is visible in a low-cost survey, and
+what a conclusive test would require, but it cannot by itself demonstrate that faults
+transport road salt.'' New Section~4.4 ``Limitations''; expanded Section~4.2; Figures~1--5
+revised and Figure~6 added.
 \end{changes}
-\plan{D1 accepted. Title decided by author 2026-11-07 (already applied in revisions.tex). Overreach phrase list in
-docs/revision\_plan.md \S2.}
 
 \begin{comment}{R1.1}
 The Introduction reaches geology, the paper's central argument, only after long sections
@@ -171,16 +179,16 @@ on impacts and the global salinization syndrome
 \begin{response}
 Agreed. We have restructured the Introduction so that fault hydrogeology follows directly
 after a condensed account of road salt and its groundwater legacy. The material on
-ecological impacts and the freshwater salinization syndrome has been shortened and
-partly moved to the Discussion, where it frames the implications.
+ecological impacts has been shortened, and the freshwater salinization syndrome is now
+introduced in two sentences after the fault paragraph; its implications are discussed in
+Section~4.3.
 \end{response}
 \begin{changes}
-Section~1 reorganized: (1) road salt and the groundwater legacy (condensed); (2) faults as
-conduits and barriers in fractured bedrock (moved forward, expanded); (3) salinization
-syndrome (two to three sentences); (4) hypothesis and testable predictions.
+Section~1 reorganized: (1) road salt and its impacts (condensed); (2) the groundwater
+legacy; (3) faults as conduits and barriers in fractured bedrock (moved forward,
+expanded); (4) salinization syndrome (two sentences); (5) tributary mixing (new);
+(6) hypothesis and testable predictions.
 \end{changes}
-\plan{Tension with the editor's earlier $\geq$5{,}000-word target: move text rather than
-delete it. Author to confirm the target still applies (plan D7).}
 
 \begin{comment}{R1.2}
 In the Introduction soil (not relevant here when looking specifically for chloride) and
@@ -192,11 +200,8 @@ groundwater storage and release timescales relevant to baseflow chloride.
 \end{response}
 \begin{changes}
 Section~1: sentence citing soil persistence of 2.5--5 months removed; the groundwater
-residence-time argument is retained.
+storage and release argument (``released to streams over years to decades'') is retained.
 \end{changes}
-\plan{Interacts with R2.9 (Reviewer 2 cites the 5-month soil persistence as a possible
-alternative). Keep soil flushing as an acknowledged alternative in \S4.2, not as intro
-framing.}
 
 \begin{comment}{R1.3}
 The three testable predictions have no supporting references
@@ -207,9 +212,9 @@ produce localized steps in longitudinal specific conductance; that late-season b
 dominated by groundwater; and that chloride is the most direct tracer of deicing salt.
 \end{response}
 \begin{changes}
-Section~1, final paragraphs: citations added \tbd{refs from WP2, verified}.
+Section~1, final paragraphs: citations added for each prediction (Harte \& Trowbridge, 2010;
+Hodgins et al., 2024, 2026; Miller et al., 2014; Mullaney et al., 2009).
 \end{changes}
-\plan{WP2: find and verify refs. No unverified citations.}
 
 \begin{comment}{R1.4}
 The fault hydrogeology rests on a karst analogue and a study of unconsolidated aquifers,
@@ -219,17 +224,15 @@ not on work in metamorphic bedrock (e.g., Caine et al., 1996; Bense et al., 2013
 We thank the Reviewer for these references. The fault-hydrogeology framing now rests on
 the fault-zone architecture model of Caine et al.\ (1996) and the review of Bense et al.\
 (2013), together with studies of fault-controlled flow in fractured crystalline and
-metamorphic bedrock \tbd{WP2 refs}. The karst example is retained only as an
+metamorphic bedrock (Manda et al., 2008; Kim et al., 2014). The karst example is retained only as an
 explicitly labelled illustration of how anisotropic fault-parallel flow can be, and we
 note that carbonate aquifers are not a direct analogue for the metasedimentary bedrock
 of our study area.
 \end{response}
 \begin{changes}
-Sections~1 and 2.1: Caine et al.\ (1996), Bense et al.\ (2013) and \tbd{n} additional
-bedrock references added; karst example retained in one sentence and labelled as a carbonate example.
+Sections~1, 2.1 and 4.3: Caine et al.\ (1996), Bense et al.\ (2013) and two additional
+bedrock references (Manda et al., 2008; Kim et al., 2014) added. Section~1: the karst example is ``cite[d] only as a carbonate example of how anisotropic fault-parallel flow can be, because karst is not a direct analogue for the metasedimentary bedrock of our study area.''
 \end{changes}
-\plan{WP2: verify Caine 1996 (Geology 24:1025) and Bense 2013 (Earth-Sci.\ Rev.\ 127:171)
-against the actual papers.}
 
 \begin{comment}{R1.5(1)}
 A longitudinal survey of specific conductance as in the paper is a reasonable, low-cost
@@ -239,32 +242,34 @@ careful in state that, more specifically:
 (1) There are no discharge data and no source tracers
 \end{comment}
 \begin{response}
-We agree, and we now describe the survey as a screening tool that locates changes in
-specific conductance rather than attributing them. The absence of discharge data and
-source tracers is stated explicitly in the new Limitations section; without them we cannot
-estimate the volume or chemistry of the inputs. Paired discharge measurements, Cl/Br
-ratios and groundwater age tracers are identified as the next step for testing the
-hypothesis.
+We agree, and we now describe the survey as a screening tool that shows where specific
+conductance changes rather than attributing the changes. The absence of discharge data and
+source tracers is stated explicitly in the new Limitations section (Section~4.4); without
+them we cannot estimate the volume of any input or attribute salt to roads, wastewater or
+other sources. Paired discharge measurements, chloride-to-bromide ratios and groundwater
+age tracers are identified as the next step for testing the hypothesis (Section~4.5).
 \end{response}
 \begin{changes}
-Sections~2.2 and 4.x (Limitations); Section~4.4 (future work).
+Sections~1 and 4.1 (screening framing); Section~4.4 (Limitations): ``We have no discharge
+measurements \ldots{} We have no source tracers, so we cannot attribute salt to roads,
+wastewater or other sources.'' Section~4.5 (test design).
 \end{changes}
 
 \begin{comment}{R1.5(2)}
 (2) There is only one chloride transect, measured with an ion-selective probe
 \end{comment}
 \begin{response}
-Agreed. We now state that the chloride data are a single transect measured with an
-ion-selective electrode on a YSI multiparameter sonde \tbd{model}, give the stated accuracy
-of that sensor \tbd{manufacturer spec}, and note that ion-selective chloride measurements
-are subject to interferences and drift. The chloride transect, collected in a different
-year from the conductivity survey, is presented as a separate, descriptive observation
-rather than as confirmation (see also R2.7).
+Agreed. We now state that the chloride data are a single transect of 18 main-stem samples
+(plus one side-tributary sample), give the measurement method and its stated accuracy
+\tbd{chloride method, instrument and accuracy, once confirmed}, and list the single
+transect among the limitations. The transect, collected in a different year from the
+conductivity survey, is presented as a separate, descriptive observation rather than as
+confirmation (see also R2.7).
 \end{response}
+\plan{Chloride method unconfirmed (author checking with J.\ Kittredge / Z.\ Klos). The submitted text says ``YSI multi-probe'', but all values are multiples of 1.25\,mg\,L$^{-1}$, which suggests a kit. Fill the TBD here and in Sections~2.2 and 4.4 of the manuscript.}
 \begin{changes}
-Section~2.2 (instrument and accuracy); Section~3 and 4.x (single-transect caveat).
+Section~2.2 (chloride method, instrument and accuracy \tbd{pending}); Section~3.2 (the transect is ``a single transect from a different year \ldots{} so it cannot confirm the conductivity pattern''); Section~4.4 (single-transect limitation).
 \end{changes}
-\plan{Author: supply the YSI sonde/probe model; specs come from the manual. No new testing.}
 
 \begin{comment}{R1.5(3)}
 (3) Comparing zone means with t-tests cannot show whether a change is abrupt.
@@ -273,26 +278,28 @@ directly and could be recommended
 \end{comment}
 \begin{response}
 We thank the Reviewer for this suggestion and have implemented it. For each single-day
-survey transect we fitted segmented regressions of specific conductance against
-downstream distance and ran a change-point analysis (segmented, piecewise-linear regression with the number of
-breakpoints chosen by BIC, checked with a change-in-mean analysis). No breakpoint in specific conductance
+survey transect we fitted continuous piecewise-linear regressions of specific conductance
+against downstream distance, with zero, one or two breakpoints chosen by BIC, and checked
+them with a penalized change-in-mean analysis (PELT). No breakpoint in specific conductance
 coincides with a mapped fault crossing on any transect. At Site~2 a single breakpoint is
 selected about 1.6\,km upstream of the Contrast~B boundary, after which conductance
 increases steadily downstream (from 0.1 to 1.6\uScm\ per km), so the increase across
 Contrast~B is better described as a gradual rise than an abrupt step. No breakpoint is
-supported for Site~1 or for the 19~October survey at Site~3. On the lower 26~October Site~3
+supported for Site~1 or for the 19~October survey at Site~3, and on the upper 26~October
+Site~3 transect two breakpoints are only marginally preferred and lie away from any trace.
+On the lower 26~October Site~3
 survey the only breakpoint lies about 520\,m upstream of the Contrast~E zone boundary,
-although within the positional uncertainty of a mapped trace (see R2.6). We
+123\,m from the nearest mapped trace, whose position is itself uncertain (see R2.6). We
 report these results as showing that, in this survey, changes in specific conductance are
 not concentrated at the mapped faults, and we have revised the conclusions accordingly.
 \end{response}
 \begin{changes}
-Section~2.3 (new method paragraph); Section~3 (new results); new figure showing specific
-conductance against distance for each single-day transect, with fitted segments,
-breakpoints, and the positions of mapped fault crossings and tributaries.
+Section~2.3 (new method paragraph); Section~3.3 (new results): ``Segmented regression and a
+change-in-mean check on each single-day transect \ldots{} find no specific-conductance
+breakpoint at a mapped fault crossing.'' New Figure~6 shows specific conductance against
+distance for each single-day transect, with fitted segments, breakpoints, and the positions
+of trace crossings and tributaries.
 \end{changes}
-\plan{D3 accepted. WP0: new src/changepoint.py. Needs along-channel distance for the SC
-points (compute from GPS as for chloride). Run per single-day transect, not per site.}
 
 \begin{comment}{R1.6}
 Table 1 lacks standard deviations, degrees of freedom, confidence intervals, and the
@@ -302,10 +309,11 @@ Mann-Whitney results. I'd add that to help the reader interpret the results
 Agreed. Table~1 now reports, for each contrast, the survey date, zone sample sizes, zone
 means $\pm$ standard deviation, the difference in means with its 95\% confidence interval,
 the Welch $t$ statistic, Welch--Satterthwaite degrees of freedom, $p$-value, and the
-Mann--Whitney $U$ statistic and $p$-value.
+Mann--Whitney $U$ statistic and $p$-value. The autocorrelation-adjusted $p$-values are in
+the new Table~2 (see R1.8).
 \end{response}
 \begin{changes}
-Table~1 regenerated from source data (\texttt{src/stats.py}).
+Table~1 regenerated from the source data (\texttt{src/within\_day.py}) with the columns above; Table~2 added.
 \end{changes}
 
 \begin{comment}{R1.7}
@@ -315,9 +323,10 @@ tested
 \begin{response}
 The Reviewer is correct, and this observation led us to an error in our zone definitions.
 Zones~3-1, 3-2 and 3-3 each combined measurements from two survey days (19 and 26 October
-2018), between which the overall conductivity of the stream differed by about 23\uScm\
-(two measurements 18\,m apart, one from each day, differ by 23.5\uScm). Within a single
-day the zone standard deviations are 0.4--2.6\uScm; pooling the two days inflated them to
+2018), between which the overall conductivity of the stream differed by 23.5--29.7\uScm\
+(eleven pairs of points within 120\,m; two measurements 18\,m apart at the seam between
+the surveys read 332.0 and 355.5\uScm). Within a single
+day the Site~3 zone standard deviations are 0.4--2.6\uScm; pooling the two days inflated them to
 12.6--15.8\uScm. The original statement that every contrast was computed within a single
 day's data was incorrect, and we apologize for it. We now compare zones only within a
 single survey day. With this correction, the Site~3 fault-crossing contrast (Contrast~E)
@@ -327,13 +336,12 @@ a survey spread over several days without repeated tie points can produce a spur
 step.
 \end{response}
 \begin{changes}
-Sections~2.3 and 3: zone contrasts recomputed within survey days; incorrect statement
-removed; Table~1 and Figure~4 updated (survey date shown).
+Sections~2.2, 2.3 and 3.1: zone contrasts recomputed within survey days; the incorrect
+statement removed. Section~3.1 (``Correction to the submitted Contrast E''): ``That value
+was an artefact of pooling two survey days, and the statement that every comparison used a
+single day's data was incorrect.'' Table~1 and Figure~4 updated (survey date shown);
+Section~4.5 uses the case as a pitfall to avoid.
 \end{changes}
-\plan{D0(a) locked. The offset is 27--30\uScm\ where the two days overlap and 23.5 at the
-seam (not constant, so no offset correction). Preliminary numbers: E 358.8$\to$360.4, $p$=0.090; D (19 Oct)
-$-2.8$, $p$=0.140; C $-3.8$ ($p$=0.093, 19 Oct) and $-5.6$ ($p<$0.001, 26 Oct). Confirm
-before submission.}
 
 \begin{comment}{R1.8}
 Spatial autocorrelation between samples 100 m apart is acknowledged but not handled, so
@@ -342,7 +350,8 @@ the p-values are likely too small
 \begin{response}
 Agreed. We now estimate the lag-1 autocorrelation of specific conductance along each
 transect and use it to compute an effective sample size for each zone, and report the
-$t$-tests with these adjusted sample sizes. The adjustment raises every $p$-value; Contrast~B
+$t$-tests with these adjusted sample sizes. The adjustment raises the $p$-value wherever the residuals are positively autocorrelated
+(Contrasts~B, D, E, and C on 26~October) and leaves the others unchanged; Contrast~B
 remains significant ($p = 0.017$ with adjusted sample sizes, compared with $p < 0.001$
 unadjusted), and Contrasts~D and E are further from significance ($p = 0.28$ and 0.24). We also note that, because
 neighbouring samples are not independent, the $p$-values should be read as approximate,
@@ -350,12 +359,10 @@ and that the change-point analysis (Comment R1.5(3)) gives a complementary test 
 not treat the samples as independent replicates.
 \end{response}
 \begin{changes}
-Section~2.3 (autocorrelation method; the claim that within-zone scatter is small relative
-to the contrasts removed); Table~1 (adjusted $n_\mathrm{eff}$ and $p$).
+Section~2.3 (autocorrelation method; $n_{\mathrm{eff}} = n(1-\rho)/(1+\rho)$): ``we treat the
+adjusted $p$-values as a sensitivity check rather than a correction.'' Table~2 (adjusted
+$n_\mathrm{eff}$ and $p$); Section~3.1.
 \end{changes}
-\plan{Zones are 3--17 points; lag-1 estimates will be noisy. Fallback: report residual
-autocorrelation from the segmented regression and a block/ AR(1)-error model. Avoid
-over-engineering.}
 
 \begin{comment}{R1.9}
 The z-score normalization that was presented on the Methodology has no effect on
@@ -368,8 +375,7 @@ analysis. We have removed the normalization and its equation; the figures now al
 specific conductance in \uScm.
 \end{response}
 \begin{changes}
-Section~2.3: Equation~1 and the normalization paragraph removed; Figures~2--4 colour scale
-changed to \uScm.
+Section~2.3: the normalization equation and paragraph removed (the remaining equation is the Welch $t$ statistic); Figures~2--4 colour scales changed to \uScm.
 \end{changes}
 
 \begin{comment}{R1.10}
@@ -377,17 +383,17 @@ The explanation for the non-significant Contrast D is incorrect if you consider 
 other contrasts have the same sample-size split
 \end{comment}
 \begin{response}
-The Reviewer is right: Contrasts~C and E have the same 17/6 split, so unequal sample sizes
-cannot explain the result at Contrast~D. We have removed that explanation. Within a single
-survey day Contrast~D shows a small decrease ($-2.8$\uScm, 95\% CI $-7.4$ to $+1.7$, $p = 0.14$); we report it as a fault crossing that shows no increase in specific
-conductance, which counts against a uniform fault-conduit effect. We also note that the
-2020 chloride peaks lie within a few hundred metres downstream of this crossing (see
-R2.7). The two measurements are from different years, and we present the contrast between
-them as unresolved rather than as support for the hypothesis.
+The Reviewer is right: in the submitted analysis Contrasts~C and E had the same 17/6 split,
+so unequal sample sizes cannot explain the result at Contrast~D. We have removed that
+explanation. Within a single survey day Contrast~D shows a small, non-significant decrease
+($-2.8$\uScm, 95\% CI $-7.4$ to $+1.7$, $p = 0.14$), and we report it as a fault with no
+tributary that shows no increase in specific conductance. We also note that the 2020
+chloride peak lies near the survey points flagged for Contrast~D (133--468\,m from the
+nearest flagged point; see R2.7), but it rests on one sample from a different year, and we
+describe it as an observation worth testing, not as support for the hypothesis.
 \end{response}
 \begin{changes}
-Sections~3, 4.1 and 5: sample-size explanation removed; Contrast~D reported as a
-non-supporting case.
+Sections~3.1, 4.1 and 5: sample-size explanation removed; Contrast~D reported as showing no increase. Section~4.1: ``Contrast D, at a fault with no tributary, shows no increase.'' Section~5: ``A second fault shows no increase.''
 \end{changes}
 
 \begin{comment}{R1.11}
@@ -395,19 +401,21 @@ Some steps, such as 4.3 $\mu$S/cm at Contrast B, are close to the uncertainty of
 temperature-compensated SC
 \end{comment}
 \begin{response}
-Agreed. We now state the accuracy of the conductivity meter and of its temperature
-compensation \tbd{manufacturer spec, e.g.\ $\pm$x\% of reading $\approx\pm$y\uScm\ at
-310\uScm}. All Site~2 measurements were taken on one day with the same instrument and a
+Agreed. We now state the instrument accuracy. The manufacturer gives no separate accuracy
+for the Orion 013010MD cell; its cell constant is set by calibration. The compatible Orion
+Star meters specify $\pm$0.5\% of reading $\pm$1 digit, i.e.\ about $\pm$1.7\uScm\ at
+310\uScm\ (Site~2) and $\pm$1.9\uScm\ at 360\uScm\ (Site~3). All Site~2 measurements were taken on one day with the same instrument and a
 narrow water-temperature range (15.4--15.8\,$^\circ$C), so a calibration offset would
 affect both zones equally; the within-zone standard deviations (1.1 and 1.9\uScm) are
-smaller than the 4.3\uScm\ difference. We nonetheless describe Contrast~B as a small
-change near the limit of what the survey can resolve, and we have tempered its
-interpretation.
+smaller than the 4.3\uScm\ difference. The 4.3\uScm\ difference at Contrast~B is about
+2.5 times this accuracy, whereas the 1.6\uScm\ difference at Contrast~E is within it. We
+nonetheless describe Contrast~B as a small change near the limit of what the survey can
+resolve, and we have tempered its interpretation.
 \end{response}
 \begin{changes}
-Section~2.2 (instrument accuracy); Sections~3 and 4.1 (Contrast~B described as small).
+Section~2.2 (instrument accuracy); Sections~3.1, 4.1 and 4.4 (Contrast~B described as ``a real but small difference''; Contrast~E ``within the instrument's stated accuracy'').
 \end{changes}
-\plan{Author: meter body model used with the Orion 013010MD cell, and its accuracy spec.}
+\plan{Author: confirm the Orion Star meter body used (TODO comment in Section~2.2 of revisions.tex); the accuracy quoted here is the spec shared by the A222/A322/A325.}
 
 \begin{comment}{R1.12}
 The measured SC differences appear genuine and are within an expected range, but the
@@ -419,25 +427,37 @@ same study site evaluated in Kelly et al., 2008) and groundwater unrelated to fa
 enter the creek anywhere.
 \end{comment}
 \begin{response}
-We agree, and Section~4.2 now discusses each of these alternatives: direct runoff and
-shallow groundwater from US~44/NY~82 next to the highest-conductivity zones; developed
-land beside Site~2; the wastewater treatment plant and septic systems upstream identified
-by Kelly et al.\ (2008); and diffuse groundwater discharge unrelated to faults. We now
+We agree, and Section~4.2 now discusses each of these alternatives: road proximity,
+including salt stored in roadside soils and shallow groundwater; developed land (Site~2
+runs beside US~44 and ends near the settled area around Titusville); wastewater; and
+diffuse groundwater discharge unrelated to faults. On wastewater, we located the permitted
+facilities from EPA ECHO records. The Millbrook sewage treatment plant described by Kelly
+et al.\ (2008), whose study for the East Branch of Wappinger Creek attributed about 4\% of
+the sodium chloride input to sewage (septic systems and the plant together), is upstream
+of all three sites: about 2.4\,km along the channel above Site~3, and further above Sites~1
+and 2. As a continuous upstream source it would raise baseline conductance but would not by
+itself create a step at a mid-reach zone boundary. More relevant to Contrast~B, two small
+private plants (Stratford Farms and Ennis Mobile Home Park) have listed locations
+240--370\,m from Zone~2-1, just upstream of the Site~2 breakpoint. We could not establish
+their outfall locations or flows, so we cannot test whether they contribute, and Section~4.2
+now names them as a plausible, untested alternative source for the Site~2 increase. The
+facilities are shown on Figures~1 and 3. We now
 state that our data cannot distinguish these sources from fault-routed groundwater, and
 that resolving them would require tracer and discharge measurements. We have also
 quantified the distance from each sampling point to the nearest major
-road using existing road data, and report the median for each zone descriptively
-(245--927\,m; supporting table) without attributing the contrasts to it. At Site~2, for
+road using existing road data (TIGER/Line), and report the median for each zone
+descriptively (245--927\,m; Table~2) without attributing the contrasts to it. The Site~3
+zones lie 245--425\,m from the nearest major road, mainly US~44, with no monotone relation
+to the conductance pattern. At Site~2, for
 example, the downstream zone is farther from a major road than the upstream zone (median
 726 vs.\ 335\,m), so road proximity does not by itself account for the increase at
 Contrast~B, although it cannot be excluded either.
 \end{response}
 \begin{changes}
-Section~4.2 expanded; ``conserved forest'' argument for discounting land-use inputs
-removed.
+Section~4.2 expanded (road proximity, developed land, wastewater, diffuse groundwater);
+Table~2 (road distances); Figures~1 and 3 (wastewater facilities). The ``conserved forest''
+argument for discounting land-use inputs is withdrawn: ``we withdraw it.''
 \end{changes}
-\plan{Verify the WWTP/septic facts in Kelly et al.\ 2008 before writing them. Road-distance
-analysis is optional (data/tiger). Shared with R2.9.}
 
 \begin{comment}{R1.13}
 Several statements overreach, such as ``strong initial evidence'' and ``this newly
@@ -449,29 +469,33 @@ longitudinal salinity surveys or with fault hydrogeology in metamorphic rocks.
 \end{comment}
 \begin{response}
 Agreed on all points. We have removed or rephrased the overreaching statements, including
-those quoted; Section~4.4 no longer claims all three crossings support the hypothesis; and
-the management section now proposes mapped faults as a candidate screening layer to be
+those quoted; the Discussion and Conclusions no longer claim that all three crossings
+support the hypothesis (the corresponding section, 4.4 in the submission, is now
+Section~4.1: Contrast~D ``shows no increase''); and the management section (Section~4.6) now proposes mapped faults as a candidate screening layer to be
 tested, rather than recommending changes in deicing practice. We have added comparisons
 with other longitudinal salinity surveys and with fault hydrogeology in crystalline and
-metamorphic rocks \tbd{WP2 refs}.
+metamorphic rocks (e.g.\ Harte \& Trowbridge, 2010; Hodgins et al., 2024, 2026; Orr \&
+Boyer, 2026; Manda et al., 2008; Kim et al., 2014).
 \end{response}
 \begin{changes}
-Sections~4.1, 4.3, 4.4, 4.5 and 5 revised; new comparison paragraph in Section~4.3.
+Sections~4.1, 4.6 and 5 revised; new comparison paragraphs in Section~4.3. Section~4.6:
+``The evidence here does not justify changing deicing practice on the basis of fault
+locations.''
 \end{changes}
 
 \begin{comment}{R1.14}
 some references lack DOIs or report numbers and grouped citations are out of order.
 \end{comment}
 \begin{response}
-Corrected. DOIs or report numbers have been added for all references where they exist,
-and grouped citations are now sorted and compressed.
+Corrected. DOIs have been added to the references where they exist. Four entries (Budnik et
+al., 2010; Kelly et al., 2019; Kelting et al., 2010; Adirondack Road Salt Reduction Task
+Force, 2023) are reports without DOIs; they carry report numbers or URLs. Grouped citations
+are now sorted and compressed.
 \end{response}
 \begin{changes}
-Reference list; \texttt{natbib} option \texttt{sort\&compress}.
+Reference list (\texttt{references\_revised.bib}); \texttt{natbib} option \texttt{sort\&compress} in the preamble.
 \end{changes}
-\plan{11 entries lack DOIs: jamshidi2020, richburg2001, shattuck2023, kaushal2005,
-schalk2012, bredehoeft1992, budnik2010, kelly2019, kelting2010, willmert2018,
-adirondack2023. Verify each.}
+\plan{Check that kelting2010 (AWI2010-01) is the only one of the four DOI-less entries with a report number; the others have URLs only.}
 
 % ===========================================================================
 \reviewer{2}
@@ -496,7 +520,7 @@ only partly consistent with the hypothesis, and the revision addresses each of t
 areas: the claims are scaled back throughout and the paper is reframed as a
 hypothesis-generating case study; every figure has been revised as requested; and
 alternative interpretations are discussed in an expanded Section~4.2 and a new Limitations
-section.
+section (Section~4.4).
 \end{response}
 
 \begin{comment}{R2.1}
@@ -509,14 +533,14 @@ the addition of salt-rich groundwater.
 \begin{response}
 We have added a paragraph describing how tributary confluences change main-stem
 conductance through mixing of two end-members, so that the downstream value depends on the
-relative discharges and conductivities of the two streams \tbd{refs from WP2}. This sets up
+relative discharges and conductivities of the two streams (Genereux, 1998). This sets up
 the comparison between tributary and fault boundaries in the Results. We also note the
 Reviewer's suggestion that tributary dilution may be partly offset by salt-rich
 groundwater, as a possibility that our data cannot test without discharge measurements.
 \end{response}
 \begin{changes}
-Section~1: new paragraph on confluence mixing; Section~4.1: dilution offset
-noted as a hypothesis.
+Section~1: new paragraph on confluence mixing (``We therefore treat tributary and fault boundaries as distinct kinds of contrast''); Section~4.1: dilution offset
+noted as a possibility that cannot be tested without discharge measurements.
 \end{changes}
 
 \begin{comment}{R2.2}
@@ -529,7 +553,7 @@ carried out on specific conductance in \uScm. To avoid confusion we have removed
 the Methods (see also response R1.9), and the figures now show unnormalized values.
 \end{response}
 \begin{changes}
-Section~2.3: Equation~1 and normalization paragraph removed.
+Section~2.3: normalization equation and paragraph removed.
 \end{changes}
 
 \begin{comment}{R2.3}
@@ -543,9 +567,10 @@ not in a new table 2 in the main text, then at least in an appendix.
 Agreed. Zone means are now reported as mean $\pm$ standard deviation in the text, in
 Table~1 and in the zone labels of Figures~2--4. The quoted statement has been removed,
 because once zones were restricted to single survey days (see R1.7) the comparison it made
-no longer held in the same form. All individual measurements (survey date, location,
-distance along channel, specific conductance, temperature and zone assignment) are listed
-in a new Appendix table and in the public data repository.
+no longer held in the same form. All individual measurements (field site and point,
+survey date, distance along channel, position, specific conductance, temperature, zone
+assignment and field-log flag) are listed in a new Appendix~A table and in the public data
+repository.
 \end{response}
 \begin{changes}
 Table~1; Figures~2--4; new Appendix~A (all measurements).
@@ -558,17 +583,18 @@ justification/explanation for how the zones (and contrast) were chosen given the
 additional fault crossings would be helpful.
 \end{comment}
 \begin{response}
-\tbd{Author to explain how the Site~2 zone boundary was chosen.} We have added the zone
-selection rule to the Methods and to the Figure~3 caption, and show all of the mapped
-fault's crossings in Figure~3. \tbd{Explain why the other crossings were not used as zone
-boundaries, e.g.\ spacing too short for sufficient samples, or the trace runs along the
-channel rather than across it.}
+We have clarified in Section~2.2 that, at Site~2, the mapped fault runs along the creek for
+the whole surveyed reach and that the boundary between Zones~2-1 and 2-2 (Contrast~B, about
+4.0\,km along the survey) lies mid-reach rather than at a single mapped crossing. Figure~3
+now marks the two places where the digitized trace crosses the surveyed channel (about 1.0
+and 5.8\,km along the survey), and Sections~3.1 and 4.1 state that the boundary does not
+coincide with either. \tbd{Author: explain how the Site~2 boundary was chosen, and why the
+two crossings were not used as zone boundaries.}
 \end{response}
 \begin{changes}
-Section~2.2 (zone selection rule); Figure~3 and caption.
+Section~2.2 (Site~2 boundary lies mid-reach; rationale \tbd{pending}); Section~3.1 (``the digitized trace crosses the surveyed channel at about 1.0 and 5.8~km along the survey, whereas the Zone 2-1/2-2 boundary lies at about 4.0~km''); Figure~3 and caption (crossings marked).
 \end{changes}
-\plan{Needs the author. A change-point result for Site~2 (R1.5(3)) may also help show where the
-step actually occurs relative to each crossing.}
+\plan{Needs the author: the Site~2 boundary rationale (also a TBD in Section~2.2 of revisions.tex).}
 
 \begin{comment}{R2.5}
 The increase in conductance across contrast B is very small -- what is the uncertainty in
@@ -580,8 +606,10 @@ statistically significant after normalization.
 \end{comment}
 \begin{response}
 We share the Reviewer's caution. Specific conductance was measured with a Thermo
-Scientific Orion 013010MD conductivity cell \tbd{and meter model}, with a stated accuracy
-of \tbd{spec}; the YSI instrument was used only for the 2020 chloride transect. Within-zone
+Scientific Orion 013010MD conductivity cell, not a YSI instrument; the compatible Orion
+Star meters specify an accuracy of $\pm$0.5\% of reading, about $\pm$1.7\uScm\ at
+Site~2. A calibration offset common to all readings on the same day cancels in a
+within-day zone difference, whereas random reading error does not. Within-zone
 standard deviations at Site~2 are 1.1 and 1.9\uScm\ (Table~1), and all individual readings
 are now listed in the Appendix. The tests are on unnormalized values. All readings were
 taken in the thalweg, so we did not sample the cross-channel or depth variability the
@@ -594,7 +622,7 @@ not demonstrate a point input at the fault, and list single-point thalweg sampli
 the limitations.
 \end{response}
 \begin{changes}
-Sections~2.2, 3 and 4.x; Table~1; Appendix~A.
+Sections~2.2, 3.1, 3.3, 4.1 and 4.4; Table~1; Appendix~A.
 \end{changes}
 
 \begin{comment}{R2.6}
@@ -611,8 +639,8 @@ survey ends and the 26~October survey begins: two measurements 18\,m apart diffe
 23.5\uScm\ because the stream's overall conductivity changed between the two days, not
 because of a change along the channel. Compared within a single day, the change across the
 mapped fault at Contrast~E is $+1.6$\uScm\ (95\% CI $-0.3$ to $+3.4$, $p = 0.090$) and not
-significant. We now report
-this result and no longer present Contrast~E as the strongest evidence.
+significant. We now report this result and no longer present Contrast~E as the strongest
+evidence (Section~3.1).
 
 On the Reviewer's question about the fault position: within the 26~October survey alone,
 specific conductance rises by about 4\uScm\ over the first $\sim$190\,m of the reach and
@@ -625,53 +653,47 @@ which to draw them as a zone. We did not find one we could cite: the source map 
 1:340{,}000 county figure that states no positional accuracy, and its authors describe the
 fault locations as ``largely conjectural since the faults themselves are rarely exposed at
 the surface'' (Budnik et al., 2010, p.~18). We therefore draw the traces as lines and
-discuss the uncertainty in the text rather than show an error zone we cannot support. The
-breakpoint's 123\,m distance from the nearest trace corresponds to less than 0.4\,mm on
-the source map, so the Reviewer's suggestion that the trace may lie slightly off its mapped
-position is plausible and consistent with our data, but it cannot be tested with them. However, the rise rests
-largely on the first two readings of that day's survey (the breakpoint sits at the minimum
-segment length the method allows), it is not significant as a zone contrast, and it could
-equally reflect an input unrelated to the fault. We state these possibilities and do not
-attribute the rise to the fault.
+discuss the uncertainty in the text rather than show an error zone we cannot support. On the printed scale of the source figure, the breakpoint's 123\,m distance from the
+nearest trace is less than 0.4\,mm, so we agree that the trace could lie slightly off its
+mapped position (as the Reviewer suggests), but our data cannot test this. The rise is
+also not robust: the breakpoint sits at the minimum segment length the method allows, the
+rise is not significant as a zone contrast, and it could equally reflect an input
+unrelated to the fault. The manuscript does not attribute the rise to the fault: it notes
+that Contrast~E is within instrument accuracy and that its only breakpoint lies near the
+start of a short transect, not at the trace (Section~4.1), and that we cannot say how far a
+real fault lies from any mapped position (Section~4.4).
 \end{response}
 \begin{changes}
-Sections~3, 4.1 and 4.x (Limitations); Figure~4 (survey-date symbology); Table~1.
+Sections~3.1, 3.3, 4.1 and 4.4 (Limitations); Figure~4 (survey-date symbology); Table~1. Section~4.4: ``so we draw them as lines and cannot say how far a real fault lies from any mapped position.''
 \end{changes}
-\plan{D0(a) locked. Most sensitive response in the letter; author should review the
-wording carefully. The 600\,m figure is from a quick check (plan \S0b.2) and must be
-reproduced by WP0.}
+\plan{Most sensitive response in the letter; author should review the wording.}
 
 \begin{comment}{R2.7}
 The chloride measurements could be tested for statistically significant difference above
 and below contrast E -- that would be interesting to see as well.
 \end{comment}
 \begin{response}
-We thank the Reviewer for this suggestion. When we located the Contrast~E fault crossing
-on the chloride transect from the GPS positions, we found that the transect ends at that
-crossing: only 2 of the 18 measurements lie downstream of it, too few for a meaningful
-two-sample test. Chloride near the crossing is low and uniform (about 14--15\,mg\,L$^{-1}$
-on both sides), so the transect shows no chloride increase at Contrast~E. This also
+We thank the Reviewer for this suggestion. When we located the survey points flagged for
+Contrast~E on the chloride transect from the GPS positions, we found that the transect ends
+just downstream of them: only 2 of the 18 main-stem samples lie downstream, too few for a
+meaningful two-sample test. Chloride near Contrast~E is low and flat (the last five samples
+are 13.75--17.5\,mg\,L$^{-1}$), so the transect shows no chloride increase there. This also
 corrects a statement in the original manuscript, which attributed the chloride peak to the
-Contrast~E fault. The two chloride peaks (50 and 40\,mg\,L$^{-1}$) instead lie about
-130--470\,m downstream of the Contrast~D fault crossing and about 300\,m from the nearest
-mapped fault trace. To describe where chloride changes along the transect without relying
-on two-sample tests, we applied the same change-point / segmented-regression analysis used
-for specific conductance. It selects a single breakpoint at about 470\,m along the
-transect (bootstrap interval 310--800\,m), about 300\,m from the nearest mapped trace and about
-125\,m from the survey points we had flagged in the field as lying just downstream of the
-Contrast~D fault. Because this breakpoint is driven largely by
-one 50\,mg\,L$^{-1}$ sample, we report it as an observation worth testing, not as support for
-the hypothesis. Because the chloride survey was made in a different year (July 2020) from
+Contrast~E fault. The three highest values (50, 36.25 and 40\,mg\,L$^{-1}$) instead lie
+133--468\,m from the nearest survey point flagged for Contrast~D and about 300\,m from the
+nearest digitized fault trace. To describe where chloride changes along the transect without
+relying on two-sample tests, we applied the same change-point analysis used for specific
+conductance. It selects a single breakpoint at 467\,m along the transect (bootstrap interval
+308--800\,m), about 125\,m from the nearest Contrast~D flagged point and about 300\,m from
+the nearest trace. Because this breakpoint is driven largely by one 50\,mg\,L$^{-1}$
+sample, we report it as an observation worth testing, not as support for the
+hypothesis. Because the chloride survey was made in a different year (July 2020) from
 the conductivity survey, we present it as a separate observation and do not combine the
 two.
 \end{response}
 \begin{changes}
-Section~3 and 4.1 (chloride results rewritten and reattributed); Figure~5 (positions of the
-Contrast~D and E crossings and the mapped traces marked along the transect; change-point
-locations); chloride change-point results reported in the text.
+Sections~3.2 and 4.1 (chloride results rewritten and reattributed; ``The transect therefore shows no chloride increase at Contrast E, which corrects the submitted manuscript's attribution of the chloride peak to that fault''); Section~2.2 (transect length 2.35~km); Figure~5 (flagged points for Contrasts~D and E and the trace crossing marked along the transect; change-point fit and bootstrap interval).
 \end{changes}
-\plan{D4 revised (plan \S0b). Zone-3-3/3-4 wording in the Fig.~5 caption is also to be
-checked: the transect lies mostly within Zone~3-3.}
 
 \begin{comment}{R2.8}
 In Zone 3-1 it looks like there are two distinct sets of data overlapping on the figure --
@@ -686,7 +708,7 @@ distinguishes the two survey days by symbol, with an inset for the overlapping r
 both the caption and the text explain the overlap.
 \end{response}
 \begin{changes}
-Figure~4 and caption; Sections~2.2 and 3.
+Figure~4 and caption; Sections~2.2 and 3.1 (``Day offset and the repeated reach'').
 \end{changes}
 
 \begin{comment}{R2.9}
@@ -705,15 +727,15 @@ land-use effects. Section~4.2 now discusses how differences in road proximity an
 density, and salt stored in roadside soils, could produce conductivity differences of the
 size observed, especially at Contrast~B. To support this discussion we report the median
 distance from each zone's sampling points to the nearest major road (245--927\,m;
-supporting table); for example, the Site~3 zones lie 245--425\,m from US~44. We also note that our survey was in late September and October 2018 rather than
-summer, and correct this in the text.
+Table~2); for example, the Site~3 zones lie 245--425\,m from the nearest major road,
+mainly US~44. We also note that our survey was in late September and October 2018 rather
+than summer, and the text now says so.
 \end{response}
 \begin{changes}
-Section~4.2 expanded; survey dates corrected in Section~2.2 (Site~1 was surveyed on
-28~September 2018).
+Section~4.2 expanded (``Road proximity'': roadside soils and shallow groundwater, and
+late-season release); Table~2; survey dates stated in Section~2.2 (four days in autumn 2018,
+Site~1 on 28~September) and Section~4.2.
 \end{changes}
-\plan{Shared with R1.12. The manuscript currently says ``October 2018'' and calls the
-season summer-like baseflow; tidy both.}
 
 \begin{comment}{R2.10}
 Figures and Tables. Figure 1 (b) is difficult to see details - I would suggest
@@ -721,22 +743,23 @@ simplifying so just major streams and faults are shown; remove other extraneous 
 Or at least highlight the streams in question.
 \end{comment}
 \begin{response}
-Figure~1b has been simplified to show only major streams, highways and the mapped
-high-angle faults, with Wappinger Creek highlighted.
+Figure~1b has been simplified to show only major streams, major highways and the mapped
+high-angle faults on a light basemap, with Wappinger Creek highlighted and labelled, the
+three study sites boxed, and permitted wastewater facilities marked.
 \end{response}
 \begin{changes}Figure~1.\end{changes}
 
 \begin{comment}{R2.11}
 Figure 2: Label contrast A. Add flow direction.
 \end{comment}
-\begin{response}Done.\end{response}
-\begin{changes}Figure~2.\end{changes}
+\begin{response}Done: Contrast~A is labelled and a flow arrow is added.\end{response}
+\begin{changes}Figure~2 and caption.\end{changes}
 
 \begin{comment}{R2.12}
 Figure 3: Label contrast B. Add flow direction.
 \end{comment}
-\begin{response}Done.\end{response}
-\begin{changes}Figure~3.\end{changes}
+\begin{response}Done: Contrast~B is labelled and a flow arrow is added. The figure also marks the two places where the trace crosses the surveyed channel and the nearby wastewater facilities (see R2.4).\end{response}
+\begin{changes}Figure~3 and caption.\end{changes}
 
 \begin{comment}{R2.13}
 Figure 4: Label each contrast E, D, C. Add flow direction. Add margin of error for fault
@@ -749,8 +772,9 @@ margin of error for the fault locations but did not find one we could cite: the 
 (Budnik et al., 2010) states none and describes the fault locations as ``largely
 conjectural''. We therefore show the faults as lines without an error zone, and discuss
 their positional uncertainty in the text (see R2.6) and in the Limitations section. The chloride transect
-Z--Z$'$ is drawn from its GPS positions. Survey days are distinguished by symbol, and an
-inset enlarges the overlapping reach in Zones~3-1 and 3-2.
+Z--Z$'$ is drawn from its GPS positions (yellow band). Survey days are distinguished by
+symbol (circles and triangles), and an inset enlarges the overlapping reach in Zones~3-1
+and 3-2.
 \end{response}
 \begin{changes}Figure~4 and caption.\end{changes}
 
@@ -760,8 +784,8 @@ location of this transect relative to site 3 in the study
 \end{comment}
 \begin{response}
 Z--Z$'$ is now shown in Figure~4, and Figure~5 marks the positions of the Contrast~D and
-E fault crossings, the nearest mapped fault traces and the Kelly et al.\ (2019) monitoring
-site along the transect.
+E flagged survey points, the trace crossing and the Kelly et al.\ (2019) monitoring site
+along the transect, together with the change-point fit.
 \end{response}
 \begin{changes}Figures~4 and 5.\end{changes}
 
@@ -776,7 +800,7 @@ two-sample comparison, so the chloride results are reported through the change-p
 analysis and Figure~5 instead. Because the normalization has been removed (see R2.2) and
 all tests use specific conductance in \uScm, the table reports unnormalized means.
 \end{response}
-\begin{changes}Table~1.\end{changes}
+\begin{changes}Table~1; Section~3.2 (chloride).\end{changes}
 
 % ===========================================================================
 \reviewer{3}

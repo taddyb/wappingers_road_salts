@@ -95,6 +95,53 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   we found no citable error zone; discuss the uncertainty in the text and in
   Limitations. Do not cite FGDC-STD-013-2006 or NMAS. Do not mention ±300 m anywhere.
   The "Defaults accepted → Fault uncertainty band" bullet below is superseded.
+- **Word count (author, 2026-11-08): the ≥5,000 main-body-word minimum still
+  applies.** Count runs Introduction → Conclusions, excluding the abstract, captions,
+  tables, equations and references. Current: 4,830 (Intro 889, Methods 1,188, Results
+  817, Discussion 1,541, Conclusions 390). Targets: Intro ~800–900 (R1.1 wants it
+  tighter, but it gains the fault-hydrogeology and tributary paragraphs), Methods
+  ~1,300–1,450, Results ~900–1,000, Discussion ~1,900–2,100 (adds Limitations and
+  the test design), Conclusions ~350–450. **Final ≥5,300 for margin.** Each text WP
+  reports its section counts with the same counting script (WP6 re-checks).
+- **Word count after WP4 (2026-11-08):** the author confirmed that the requirement is
+  ≥5,000 words in the main body, excluding the abstract and references, and that
+  6,000+ is comfortable. Strict count (also excluding captions, tables, equations and
+  the appendix): 5,992. Including figure/table captions: 6,925. WP6 re-checks; any
+  later edits must keep the strict count ≥5,500.
+- **Author block (author, 2026-11-08):** Tadd Bindas has no department: the research
+  was done as an undergraduate at Marist (University). He now works at FBF
+  Engineering. Write it as affiliation "Marist University, Poughkeepsie, NY" with a
+  footnote "Present address: FBF Engineering". Keep the email. Names and order are
+  unchanged (editor rule). Zion Klos's department and ORCIDs: still to come from the
+  author; leave a `% TODO` comment, no visible placeholder text.
+- **Instruments (author, 2026-11-08):** SC survey used a Thermo Scientific Orion
+  013010MD conductivity cell, "calibrated successfully using the standard protocols
+  outlined by the manufacturer". Name the manufacturer. Accuracy spec is being looked
+  up (`docs/instrument_specs.md`). The 2020 chloride YSI multi-probe model is still
+  unknown.
+- **Wastewater (author, 2026-11-08; findings in `docs/wwtp_kelly2008.md`,
+  `data/wwtp_facilities.csv`):** Millbrook STP (NY0025429, East Branch) is upstream
+  of all sites: ~2.4 km along the channel above Site 3, 15.3 km above Site 1 and
+  25.3 km above Site 2. It is a continuous upstream source and cannot alone make a
+  mid-reach step. **Two private STPs sit beside Site 2's zone 2-1:** Ennis MHP
+  (nearest survey point at ~0.9 km along, 369 m away) and Stratford Farms (~1.6 km
+  along, 242 m away). The Site 2 breakpoint is at 2.36 km (bootstrap 1.3–3.4 km). These
+  are ECHO facility locations, not outfalls; flows are not listed. WP4 must name them in
+  §4.2 as a plausible, untested alternative source for the Site 2 increase. Facilities
+  are being added to Figs 1b and 3. Kelly 2008 numbers to state: road 83%, parking 8%
+  (deicing 91%), sewage incl. septic 4%, softeners 3%; weathering 1% was estimated
+  from a single 1905 sample, not measured. Kelly 2008's sampling site
+  (N41.786 W73.741) is ~0.8 km from the chloride file's "long-term" point, which cites
+  Kelly **2019**, so don't conflate the two sites.
+- **WP3 done (2026-11-08).** Intro and Methods were rewritten: 45 references cited,
+  33% from 2022–2026; Intro 924 words, Methods 1,470. The orchestrator then added the
+  instrument accuracy (±0.5% of reading via the compatible Orion Star meters) and
+  neutral chloride wording. **WP4 must:** (a) move some syndrome/impacts material into
+  the Discussion, because the R1.1 response says it was "partly moved to the
+  Discussion"; (b) put the single-transect and measurement-precision caveat in
+  Limitations (R1.5(2)); (c) note that Contrast E's +1.6 µS/cm is within instrument
+  accuracy, while B's 4.3 is ~2.5×; (d) keep the chloride method neutral until it is
+  confirmed (all values are multiples of 1.25 mg/L).
 - **Defaults accepted (author, 2026-11-07):**
   - *Karst example (Ferrill 2025):* keep as one sentence, explicitly labelled a
     carbonate example and not a direct analogue for the metasedimentary bedrock (R1.4).
