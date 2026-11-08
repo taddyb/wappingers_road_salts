@@ -49,7 +49,7 @@ BASE = cx.providers.Esri.WorldGrayCanvas
 STREAM = OI["blue"]
 WATER = "#b9dcf1"   # Hudson River fill: light water blue, same family as the streams
 ROAD = "#555555"
-FAULT_LABEL = "High-angle fault, digitized from Budnik et al. (2010)"
+FAULT_LABEL = "High-angle fault, county-scale map (Budnik et al. 2010; approximate)"
 KIND = {"A": "tributary", "B": "fault zone", "C": "tributary", "D": "fault zone", "E": "fault zone"}
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8, "axes.labelsize": 8,
@@ -234,7 +234,7 @@ def draw_contrast(ax, mid, tan, label, kind, lat, sub, ground_half=170, lab_pts=
     ax.plot([p0[0], p1[0]], [p0[1], p1[1]], color="black", lw=2.4, zorder=8, solid_capstyle="butt",
             path_effects=halo(4.6))
     end = mid + nrm * lab_dir * L
-    ax.annotate(f"Contrast {label}\n{kind}{sub}", end, xytext=lab_pts, textcoords="offset points", ha="center",
+    ax.annotate(f"Contrast {label}{':' if label == 'B' else ''}\n{kind}{sub}", end, xytext=lab_pts, textcoords="offset points", ha="center",
                 va="center", fontsize=7.5, fontweight="bold", zorder=11,
                 bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="black", lw=0.9),
                 arrowprops=dict(arrowstyle="-", color="black", lw=0.9, shrinkA=0, shrinkB=0))
@@ -550,8 +550,7 @@ def fig_site(site):
         ax.text(0.015, 0.985, "28 Sep 2018; values: within-zone mean ± SD, µS/cm",
                 transform=ax.transAxes, fontsize=7, va="top", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1.5), zorder=12)
     if site == 2:
-        _site2_marks(ax, g, F_m, lat0)
-        draw_contrast(ax, mid, tan, "B", "fault zone", lat0, "", ground_half=300, lab_pts=(95, 0), lab_dir=-1)
+        draw_contrast(ax, mid, tan, "B", "fault position interpreted\nin the field (90\u00b0 bend)", lat0, "", ground_half=300, lab_pts=(95, 0), lab_dir=-1)
         flow_arrow(ax, g, 0.24, 0.36, lat0, side_m=-170, label_off=(-22, 0))
         for z, (fr, off) in {"2-1": (0.12, (-95, 30)), "2-2": (0.94, (105, 10))}.items():
             n, m, s = stats[(z, "2018-10-05")]
@@ -562,9 +561,6 @@ def fig_site(site):
     north_arrow(ax)
     sc_colorbar(fig, ax, norm)
     extra = ([wwtp_entry()] if wp else []) + route_entries({1: set(), 2: {'US'}}[site])
-    if site == 2:
-        extra += [(Line2D([], [], marker="X", ls="", mfc="white", mec="black", mew=1.2, ms=9),
-                  "Mapped trace crosses the surveyed channel (survey line)")]
     date = {1: "28 Sep 2018", 2: "5 Oct 2018"}[site]
     h, lab = common_legend(fig, [survey_entry(f"Survey point ({date})")], extra)
     finish(fig, ax, h, lab, FIG / f"rev_site{site}.png", ncol={1: 2, 2: 1}[site], y={1: -0.005, 2: -0.12}[site])
@@ -880,10 +876,10 @@ def fig_chloride():
         ax.annotate(f"{k} flagged\npoints", (np.mean(pos[k]), ymax * 0.075), xytext=(0, 5), textcoords="offset points",
                     ha="center", va="bottom", fontsize=7.5, color="#8a3f6d", fontweight="bold", zorder=6)
     for x in cross:
-        ax.plot([x], [0], marker="X", ms=11, mfc=OI["sky"], mec="black", mew=0.8, clip_on=False, zorder=7)
-        ax.axvline(x, color=OI["sky"], lw=1.2, zorder=2)
-        ax.annotate("path crosses\ndigitized trace", (x, ymax * 0.62), ha="center", fontsize=7.5, color="#1b6f9f",
-                    fontweight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+        ax.plot([x], [0], marker="X", ms=7, mfc="#bbbbbb", mec="#666666", mew=0.6, clip_on=False, zorder=7)
+        ax.axvline(x, color="#bbbbbb", lw=0.9, ls=":", zorder=2)
+        ax.annotate("county-map trace\ncrosses path\n(approximate)", (x, ymax * 0.62), ha="center", fontsize=7, color="#666666",
+                    bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.annotate("Z", (d[0], y[0]), xytext=(-10, 8), textcoords="offset points", fontsize=11, fontweight="bold")
     ax.annotate("Z\u2032", (d[-1], y[-1]), xytext=(4, 10), textcoords="offset points", fontsize=11, fontweight="bold")
     ax.annotate("Kelly et al. (2019)\nlong-term site", (d[star], y[star]), xytext=(12, 22), textcoords="offset points",
@@ -895,7 +891,7 @@ def fig_chloride():
          Line2D([], [], color=OI["verm"], lw=2.2, label=f"Segmented regression (1 breakpoint, BIC), at {bp:.0f} m"),
          Patch(fc=OI["orange"], alpha=0.30, label=f"Breakpoint 95% bootstrap interval ({blo:.0f}\u2013{bhi:.0f} m)"),
          Line2D([], [], color=OI["purple"], lw=2.4, label="Survey points flagged as just downstream of the fault (D, E), projected onto path"),
-         Line2D([], [], marker="X", ls="", mfc=OI["sky"], mec="k", label="Path crosses digitized fault trace")]
+         Line2D([], [], marker="X", ls="", mfc="#bbbbbb", mec="#666666", ms=7, label="Digitized county-map fault trace crosses survey line (approximate)")]
     ax.legend(handles=h, loc="upper center", fontsize=7, frameon=False, ncol=2, bbox_to_anchor=(0.5, -0.17))
     fig.tight_layout()
     out = FIG / "rev_chloride.png"

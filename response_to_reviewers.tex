@@ -24,7 +24,7 @@
 \definecolor{changecolor}{RGB}{0,70,140}
 \definecolor{plancolor}{RGB}{200,90,0}
 
-\newif\ifshowplan \showplantrue
+\newif\ifshowplan \showplanfalse
 \newcommand{\plan}[1]{\ifshowplan\par\noindent{\color{plancolor}\small\textbf{[PLAN]} #1}\par\fi}
 \newcommand{\tbd}[1]{{\color{plancolor}\textbf{[TBD: #1]}}}
 \newcommand{\uScm}{\,$\mu$S\,cm$^{-1}$}
@@ -47,7 +47,7 @@
 
 \begin{document}
 
-\noindent \today
+\noindent 8 November 2026
 
 \medskip
 \noindent Dear Editor,
@@ -72,7 +72,7 @@ changes are:
         With the corrected and expanded analyses described below, our answer from this
         survey is that the evidence is inconclusive: one fault-zone contrast shows a small,
         significant increase in specific conductance, but it is gradual rather than abrupt,
-        and no change point coincides with a mapped fault. The revised paper reports this
+        and no change point coincides with a fault contrast boundary. The revised paper reports this
         plainly, sets out what a low-cost longitudinal survey can and cannot resolve, and
         proposes a specific design for testing the fault-conduit hypothesis (Section~4.5).
   \item In re-examining the statistics as the reviewers asked, we found that three of the
@@ -135,7 +135,7 @@ reviewers, as detailed below, and provide a marked-up manuscript highlighting al
 Author names and order are unchanged; the affiliation of the first author is now given as
 Marist University, with his present address noted in a footnote.
 \end{response}
-\plan{Editor note 3 asks us to complete missing author info. Still open: Zion Klos's department and both authors' ORCIDs (TODO comment in revisions.tex). Update this response once supplied.}
+\plan{Editor note 3 asks us to complete missing author info. ORCIDs are now in the author block. Still open: Zion Klos's department (TODO comment in revisions.tex).}
 
 % ===========================================================================
 \reviewer{1}
@@ -285,7 +285,7 @@ We thank the Reviewer for this suggestion and have implemented it. For each sing
 survey transect we fitted continuous piecewise-linear regressions of specific conductance
 against downstream distance, with zero, one or two breakpoints chosen by BIC, and checked
 them with a penalized change-in-mean analysis (PELT). No breakpoint in specific conductance
-coincides with a mapped fault crossing on any transect. At Site~2 a single breakpoint is
+coincides with a fault contrast boundary or with a point where the digitized trace crosses the transect. At Site~2 a single breakpoint is
 selected about 1.6\,km upstream of the Contrast~B boundary, after which conductance
 increases steadily downstream (from 0.1 to 1.6\uScm\ per km), so the increase across
 Contrast~B is better described as a gradual rise than an abrupt step. No breakpoint is
@@ -300,7 +300,7 @@ not concentrated at the mapped faults, and we have revised the conclusions accor
 \begin{changes}
 Section~2.3 (new method paragraph); Section~3.3 (new results): ``Segmented regression and a
 change-in-mean check on each single-day transect \ldots{} find no specific-conductance
-breakpoint at a mapped fault crossing.'' New Figure~6 shows specific conductance against
+breakpoint at a fault contrast boundary or at a point where the digitized trace crosses the transect.'' New Figure~6 shows specific conductance against
 distance for each single-day transect, with fitted segments, breakpoints, and the positions
 of trace crossings and tributaries.
 \end{changes}
@@ -341,10 +341,8 @@ step.
 \end{response}
 \begin{changes}
 Sections~2.2, 2.3 and 3.1: zone contrasts recomputed within survey days; the incorrect
-statement removed. Section~3.1 (``Correction to the submitted Contrast E''): ``That value
-was an artefact of pooling two survey days, and the statement that every comparison used a
-single day's data was incorrect.'' Table~1 and Figure~4 updated (survey date shown);
-Section~4.5 uses the case as a pitfall to avoid.
+statement removed. Section~3.1 (``Pooling days''): ``When the two survey days are pooled, Contrast E appears as a rise of $+18.0$~$\mu$S/cm ($p < 0.001$), larger than any other step in the survey. That value is an artefact of pooling two survey days.'' Table~1 and Figure~4 updated (survey date shown);
+Sections~4.5 and 5 use the case as a pitfall to avoid.
 \end{changes}
 
 \begin{comment}{R1.8}
@@ -440,11 +438,13 @@ et al.\ (2008), whose study for the East Branch of Wappinger Creek attributed ab
 the sodium chloride input to sewage (septic systems and the plant together), is upstream
 of all three sites: about 2.4\,km along the channel above Site~3, and further above Sites~1
 and 2. As a continuous upstream source it would raise baseline conductance but would not by
-itself create a step at a mid-reach zone boundary. More relevant to Contrast~B, two small
+itself create a step at a zone boundary. More relevant to Contrast~B, two small
 private plants (Stratford Farms and Ennis Mobile Home Park) have listed locations
 240--370\,m from Zone~2-1, just upstream of the Site~2 breakpoint. We could not establish
 their outfall locations or flows, so we cannot test whether they contribute, and Section~4.2
 now names them as a plausible, untested alternative source for the Site~2 increase. The
+Titusville plant lies just downstream of the last Site~2 survey point, so it cannot affect
+Contrast~B, and the Valley Dale plant discharges to a tributary about 2\,km away. The
 facilities are shown on Figures~1 and 3. We now
 state that our data cannot distinguish these sources from fault-routed groundwater, and
 that resolving them would require tracer and discharge measurements. We have also
@@ -474,8 +474,9 @@ longitudinal salinity surveys or with fault hydrogeology in metamorphic rocks.
 \begin{response}
 Agreed on all points. We have removed or rephrased the overreaching statements, including
 those quoted; the Discussion and Conclusions no longer claim that all three crossings
-support the hypothesis (the corresponding section, 4.4 in the submission, is now
-Section~4.1: Contrast~D ``shows no increase''); and the management section (Section~4.6) now proposes mapped faults as a candidate screening layer to be
+support the hypothesis (the Reviewer's Section~4.4, ``Suggestions for future research'' in the original submission,
+no longer makes that claim; the discussion of the three contrasts is now in Section~4.1,
+where Contrast~D ``shows no increase''); and the management section (Section~4.6) now proposes mapped faults as a candidate screening layer to be
 tested, rather than recommending changes in deicing practice. We have added comparisons
 with other longitudinal salinity surveys and with fault hydrogeology in crystalline and
 metamorphic rocks (e.g.\ Harte \& Trowbridge, 2010; Hodgins et al., 2024, 2026; Orr \&
@@ -587,26 +588,23 @@ justification/explanation for how the zones (and contrast) were chosen given the
 additional fault crossings would be helpful.
 \end{comment}
 \begin{response}
-We have clarified in Section~2.2 that, at Site~2, the mapped fault runs along the creek for
-the whole surveyed reach and that the boundary between Zones~2-1 and 2-2 (Contrast~B, about
-4.0\,km along the survey) lies mid-reach rather than at a single mapped crossing. Figure~3
-now marks the two places where the digitized trace crosses the surveyed channel (about 1.0
-and 5.8\,km along the survey), and Sections~3.1 and 4.1 state that the boundary does not
-coincide with either. The boundary was placed where the channel makes an abrupt, roughly
-90$^{\circ}$ turn, which we interpreted in the field as the creek turning to follow the fault
-and therefore as a likely place of preferential flow along it. It is a field interpretation
-of channel geometry rather than a position taken from the mapped trace, so the mapped
-crossings were not used as boundaries. Because an abrupt bend is consistent with structural
-control but does not show that groundwater flows along the fault, and because the
-change-point analysis places the onset of the Site~2 increase about 1.6\,km upstream of this
-boundary, Section~4.1 describes Contrast~B as an increase along a fault-parallel reach, an
-observation worth testing, rather than as a step at a fault crossing.
+The Reviewer is right that the fault line in Figure~3 meets the stream in several places.
+That line is taken from the county-scale map of Budnik et al.\ (2010; 1:340{,}000), whose
+authors describe the fault locations as ``largely conjectural since the faults themselves
+are rarely exposed at the surface'' (p.~18). The apparent multiple crossings are therefore
+not reliable fault locations, and we have removed the crossing markers from Figure~3. The
+boundary between Zones~2-1 and 2-2 (Contrast~B, about 4.0\,km along the survey) reflects
+our field interpretation of where the fault is: an abrupt, roughly 90$^{\circ}$ bend in
+the channel, which we took to be the creek turning to follow the fault. Section~2.2 now
+says so, and notes that the county-scale trace runs along the creek throughout and cannot
+resolve where the fault crosses the channel. Because an abrupt bend is consistent with
+structural control but does not show that groundwater flows along the fault, and because
+the change-point analysis places the onset of the Site~2 increase about 1.6\,km upstream
+of the bend, Section~4.1 reports Contrast~B as an observation worth testing, not as a step
+at a fault.
 \end{response}
 \begin{changes}
-Section~2.2: ``We placed it where the channel makes an abrupt, roughly 90$^{\circ}$ turn,
-which we interpreted in the field as the creek turning to follow the fault\ldots{} An abrupt
-bend is consistent with structural control of the channel, but it does not by itself show
-that groundwater flows along the fault there.''; Section~3.1 (``the digitized trace crosses the surveyed channel at about 1.0 and 5.8~km along the survey, whereas the Zone 2-1/2-2 boundary lies at about 4.0~km''); Figure~3 and caption (crossings marked).
+Section~2.2: ``At Site 2 the digitized county-scale trace runs along the creek for the whole surveyed reach, so it cannot resolve where the fault crosses the channel. We placed the boundary between Zones 2-1 and 2-2 (Contrast B), about 4~km along the survey, at the position where we interpret the fault to be in the field: an abrupt, roughly 90$^{\circ}$ turn of the channel, which we took to be the creek turning to follow the fault\ldots{} An abrupt bend is consistent with structural control of the channel, but it does not by itself show that groundwater flows along the fault there.''; Section~3.1: ``The digitized county-scale trace runs along the creek throughout and crosses the survey line at about 1.0 and 5.8~km, but those intersections are not reliable fault positions, so we did not use them.''; Figure~3 and caption (crossing markers removed; the Contrast~B boundary is labelled as the fault position interpreted in the field).
 \end{changes}
 
 
@@ -709,7 +707,7 @@ the conductivity survey, we present it as a separate observation and do not comb
 two.
 \end{response}
 \begin{changes}
-Sections~3.2 and 4.1 (chloride results rewritten and reattributed; ``The transect therefore shows no chloride increase at Contrast E, which corrects the submitted manuscript's attribution of the chloride peak to that fault''); Section~2.2 (transect length 2.35~km); Figure~5 (flagged points for Contrasts~D and E and the trace crossing marked along the transect; change-point fit and bootstrap interval).
+Sections~3.2 and 4.1 (chloride results rewritten and reattributed; ``The transect therefore shows no chloride increase at Contrast E.''); Section~2.2 (transect length 2.35~km); Figure~5 (flagged points for Contrasts~D and E and the trace crossing marked along the transect; change-point fit and bootstrap interval).
 \end{changes}
 
 \begin{comment}{R2.8}
@@ -775,7 +773,7 @@ Figure 2: Label contrast A. Add flow direction.
 \begin{comment}{R2.12}
 Figure 3: Label contrast B. Add flow direction.
 \end{comment}
-\begin{response}Done: Contrast~B is labelled and a flow arrow is added. The figure also marks the two places where the trace crosses the surveyed channel and the nearby wastewater facilities (see R2.4).\end{response}
+\begin{response}Done: Contrast~B is labelled and a flow arrow is added. The figure also marks the nearby wastewater facilities; the Contrast~B box labels the boundary as the fault position interpreted in the field (see R2.4).\end{response}
 \begin{changes}Figure~3 and caption.\end{changes}
 
 \begin{comment}{R2.13}

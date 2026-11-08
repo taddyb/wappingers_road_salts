@@ -103,6 +103,20 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   ~1,300–1,450, Results ~900–1,000, Discussion ~1,900–2,100 (adds Limitations and
   the test design), Conclusions ~350–450. **Final ≥5,300 for margin.** Each text WP
   reports its section counts with the same counting script (WP6 re-checks).
+- **Site 2 reframing (author, 2026-11-08):** the Contrast B boundary (the 90° bend)
+  is where the authors believe the fault IS. The digitized Budnik trace is conjectural,
+  so its intersections with the survey (~1.0/5.8 km) are not reliable fault positions.
+  X markers are removed from the site maps and lightened/relabelled on Figs 5–6. The
+  text describes B as the field-interpreted fault position and keeps the honest ramp
+  result (onset roughly 1.6 km, 0.6–2.7 km, upstream of the bend).
+- **ORCIDs (author, 2026-11-08):** Tadd Bindas 0000-0003-3159-6276; Zion Klos
+  0000-0002-9563-6065. Klos's department is still unknown (omitted).
+- **Fable editor-style review (2026-11-08):** verdict: ready to return to the
+  reviewers after presentation fixes. Must-fixes being applied: no self-reference to the
+  submission history in the paper, bib hyphen glyphs (fixed), letter \showplanfalse and
+  date, ORCIDs, no "A Preprint" running head, appendix table anchors, Contrast C 19 Oct
+  Welch/MW disagreement stated, Titusville/Valley Dale mentioned, orphan Orr sentence
+  moved, repetition trimmed.
 - **Chloride sensor (author, 2026-11-08): RESOLVED.** YSI Pro Series 1005 chloride
   ISE (605105), on a YSI handheld meter (Pro Plus or ProQuatro). From the ProQuatro
   spec sheet: range 0–1,000 mg/L at 0–40 °C, resolution 0.01 mg/L, accuracy ±15% of

@@ -361,7 +361,7 @@ def figure_sc(store):
                     color=OI["green"] if "tributary" in kind else "#555555", fontweight="bold",
                     bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.8))
         for x in feat["trace_cross"]:
-            ax.plot([x], [ax.get_ylim()[0]], marker="X", color=OI["sky"], mec="black", mew=0.5, ms=9, clip_on=False, zorder=6)
+            ax.plot([x], [ax.get_ylim()[0]], marker="X", color="#bbbbbb", mec="#666666", mew=0.5, ms=6, clip_on=False, zorder=6)
         ax.set_title(TITLES[name] + f"  (n={len(d)}; BIC: {a['sel']} bp)", loc="left")
         ax.set_xlabel("Distance downstream along channel (m)")
         ax.set_ylabel("Specific conductance (µS/cm)")
@@ -376,8 +376,8 @@ def figure_sc(store):
          Line2D([], [], color="none", label="Zone labels in boxes; zone ends at boundary lines"),
          Line2D([], [], marker="^", ls="", color=OI["blue"], label="PELT change-in-mean"),
          Line2D([], [], color=OI["green"], ls="--", lw=1.6, label="Tributary junction (zone boundary)"),
-         Line2D([], [], color="#888888", ls=":", lw=1.2, label="Zone boundary (fault-zone contrast)"),
-         Line2D([], [], marker="X", ls="", color=OI["sky"], mec="black", label="Transect crosses digitized trace")]
+         Line2D([], [], color="#888888", ls=":", lw=1.2, label="Zone boundary (field-interpreted fault; contrasts B, D, E)"),
+         Line2D([], [], marker="X", ls="", color="#bbbbbb", mec="#666666", ms=6, label="Digitized county-map fault trace crosses survey line (approximate)")]
     ax.legend(handles=h, loc="center left", frameon=False, fontsize=9)
     fig.tight_layout()
     fig.savefig(FIG / "rev_changepoint_sc.png", dpi=300)
@@ -398,10 +398,10 @@ def figure_cl(c, a, fc, ck, faults):
         ax.text(np.mean(pos), 0.95, f"Contrast {lab}\nflagged points", transform=ax.get_xaxis_transform(), ha="center", va="top",
                 fontsize=8, color=col, bbox=dict(fc="white", ec="none", alpha=0.8, pad=1))
     for x in fc["trace_cross"]:
-        ax.plot([x], [0], marker="X", color=OI["sky"], mec="black", mew=0.5, ms=10, clip_on=False, zorder=6)
+        ax.plot([x], [0], marker="X", color="#bbbbbb", mec="#666666", mew=0.5, ms=7, clip_on=False, zorder=6)
     for x in fc["trace_cross"]:
-        ax.annotate("Path crosses mapped\nfault trace", (x, 0), xytext=(x - 120, 8.5), fontsize=8, ha="right",
-                    color="#1b6f9f", arrowprops=dict(arrowstyle="-", color="#1b6f9f", lw=0.8))
+        ax.annotate("County-map trace\ncrosses path (approx.)", (x, 0), xytext=(x - 120, 8.5), fontsize=8, ha="right",
+                    color="#666666", arrowprops=dict(arrowstyle="-", color="#999999", lw=0.8))
     u = faults.geometry.union_all()
     cm = points_metric(c.lat, c.lon)
     for i in (4, 8):  # the two "possible fault?" peaks
@@ -418,7 +418,7 @@ def figure_cl(c, a, fc, ck, faults):
          Line2D([], [], color=OI["purple"], lw=1.2, label="Survey points flagged as just downstream of the fault (SC survey), projected on path"),
          ]
     if fc["trace_cross"]:
-        h.append(Line2D([], [], marker="X", ls="", color=OI["sky"], mec="k", label="Path crosses digitized trace"))
+        h.append(Line2D([], [], marker="X", ls="", color="#bbbbbb", mec="#666666", ms=7, label="Digitized county-map fault trace crosses survey line (approximate)"))
     ax.legend(handles=h, loc="upper center", fontsize=8, frameon=False, ncol=3, bbox_to_anchor=(0.5, -0.17))
     fig.tight_layout(); fig.savefig(FIG / "rev_changepoint_cl.png", dpi=300); plt.close(fig)
 
