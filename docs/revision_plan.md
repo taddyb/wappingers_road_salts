@@ -103,6 +103,16 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   ~1,300–1,450, Results ~900–1,000, Discussion ~1,900–2,100 (adds Limitations and
   the test design), Conclusions ~350–450. **Final ≥5,300 for margin.** Each text WP
   reports its section counts with the same counting script (WP6 re-checks).
+- **Chloride sensor (author, 2026-11-08): RESOLVED.** YSI Pro Series 1005 chloride
+  ISE (605105), on a YSI handheld meter (Pro Plus or ProQuatro). From the ProQuatro
+  spec sheet: range 0–1,000 mg/L at 0–40 °C, resolution 0.01 mg/L, accuracy ±15% of
+  reading or ±5 mg/L (whichever is greater), 1–3-point calibration. From the manual:
+  2-point calibration at 10 and 1,000 mg/L recommended; freshwater only; temporary
+  drift after exposure to pH buffers; working life 3–6 months. At 14–50 mg/L the
+  accuracy is ±5 to ±7.5 mg/L. This is in §2.2, §4.4 and R1.5(2); no TBDs remain.
+  Open curiosity, not in the paper: all recorded values are multiples of 1.25 mg/L
+  although the meter resolves 0.01 mg/L (possibly rounded when transcribed). A
+  NOTE(author) comment in §2.2 asks for the calibration standards if known.
 - **Site 2 boundary (author, 2026-11-08): RESOLVED.** "The site 2 original comparison
   was where the river had a 90 degree sudden break indicating preferential flow along
   a fault line." This is in §2.2 and R2.4, framed as a field interpretation of channel
