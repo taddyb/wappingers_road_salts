@@ -61,12 +61,8 @@ manuscript. We appreciate the feedback and have toned down the conclusions, and 
 The title is now ``Do fault zones route
 road-salt-contaminated groundwater to streams? A Hudson Valley, NY Case Study''.
 
-One change goes beyond what the Reviewers asked. While re-examining the statistics as
-requested, we found that three of the four Site~3 zones pooled measurements from two survey
-days (19 and 26 October 2018) whose conductivity differed by 23.5--29.7\uScm. Correcting this
-removed the large Contrast~E step ($+18.0$ to $+1.6$\uScm), and it is why the paper now answers
-its title question ``not clearly, in this survey'' and offers a test design in place of a claim
-of evidence. We could not collect new field data for this revision, so requests that need new
+There were small changes to the presentation of the results. To better address/resolve reviewer comments on site three we split the analysis based on the days the samples were taken. 
+This provides more confindence in our responses.We could not collect new field data for this revision, so requests that need new
 measurements (discharge, tracers, repeated cross-channel sampling) are handled as limitations
 and future work.
 
@@ -93,7 +89,7 @@ addressed.
 Thank you. We have responded to every point the Reviewers raised, as detailed below. The first
 author's affiliation is now Marist University, where the work was done.
 \end{response}
-\plan{Editor note 3 asks us to complete missing author info (names, emails, affiliations). Both authors now have an affiliation and ORCID. The editor does not ask for departments. Enter the same affiliations in the OIS form.}
+\plan{Editor note 3 asks us to complete missing author info (names, emails, affiliations). Both authors now have an affiliation and ORCID. Enter the same affiliations in the OIS form.}
 
 % ===========================================================================
 \reviewer{1}
@@ -110,7 +106,7 @@ hypothesis-generating case study, discuss alternative sources and the study's li
 explicitly in the text, clarify the maps and temper the conclusions.
 \end{comment}
 \begin{response}
-Thank you; we agree. After correcting a day-pooling error (see the opening letter), only one of
+Thank you for the feedback. To improve the paper's results/presentation we split site three based on the days we sampled. Only one of
 the two crossings the Reviewer mentions still shows a significant increase, and change-point
 analysis shows it to be a gradual rise rather than a step at the fault. Our data show where conductance changes along the channel, not that faults
 cause the changes, that they connect to highways, or that road salt rather than another source
@@ -129,7 +125,7 @@ The Introduction reaches geology, the paper's central argument, only after long 
 on impacts and the global salinization syndrome
 \end{comment}
 \begin{response}
-Agreed. The Introduction now moves from road salt and its groundwater legacy straight to
+The Introduction now moves from road salt and its groundwater legacy straight to
 faults: \mq{Fault zones are one candidate control.} \Ln{intro-faults} We shortened the
 ecological-impact material and moved the salinization syndrome to two sentences after the
 fault paragraph, beginning \mq{Salinization is increasingly viewed as a coupled process}
@@ -141,7 +137,7 @@ In the Introduction soil (not relevant here when looking specifically for chlori
 groundwater timescales are mixed together
 \end{comment}
 \begin{response}
-Agreed. We removed the sentence on soil persistence (2.5--5 months) and kept only the
+Thanks for the comment. We removed the sentence on soil persistence (2.5--5 months) and kept only the
 groundwater storage and release argument: \mq{Much of the
 applied chloride accumulates in groundwater and is released to streams over years to decades}
 \Ln{intro-gw}.
@@ -165,7 +161,8 @@ not on work in metamorphic bedrock (e.g., Caine et al., 1996; Bense et al., 2013
 \begin{response}
 Thank you for these references. The framing now rests on the fault-zone architecture model of
 Caine et al.\ (1996), the review of Bense et al.\ (2013), and studies of fault-controlled flow
-in fractured metamorphic bedrock (Manda et al., 2008; Kim et al., 2014), cited in Sections~1, 2.1 and 4.3 (for example \Ln{intro-bedrock}). We removed the study of faults in unconsolidated sedimentary
+in fractured metamorphic bedrock (Manda et al., 2008; Kim et al., 2014), cited in Sections~1, 2.1 and 4.3 (for example \Ln{intro-bedrock}).
+We removed the study of faults in unconsolidated sedimentary
 aquifers (Bense et al., 2008). The karst example stays only
 as a labelled illustration: \mq{we cite it only as a carbonate example of how anisotropic
 fault-parallel flow can be, because karst is not a direct analogue for the metasedimentary
@@ -180,7 +177,7 @@ careful in state that, more specifically:
 (1) There are no discharge data and no source tracers
 \end{comment}
 \begin{response}
-We agree. The survey is now described as a screening result \Ln{disc-screening}, and the Limitations
+Thanks for the comment. The survey is now described as a screening result \Ln{disc-screening}, and the Limitations
 section (4.4) states the gaps: \mq{We have no discharge measurements, so we cannot estimate the volume of any
 groundwater input, convert conductance to load, or separate dilution from addition.}
 \Ln{lim-discharge} \mq{We have no source tracers, so we cannot attribute salt to roads,
@@ -193,8 +190,8 @@ Section~4.5 \Ln{td}.
 (2) There is only one chloride transect, measured with an ion-selective probe
 \end{comment}
 \begin{response}
-Agreed. The data are a single transect of 18 main-stem samples plus one side-tributary sample,
-and the Methods now name the sensor, a YSI Pro Series 1005 chloride ion-selective electrode
+Correct, there was only one pass done in 2020. The data are a single transect of 18 main-stem samples plus one side-tributary sample,
+but the Methods now name the sensor, a YSI Pro Series 1005 chloride ion-selective electrode
 \Ln{cl-sensor}, and give its accuracy: \mq{The manufacturer gives a range of
 0--1{,}000~mg/L, a resolution of 0.01~mg/L, and an accuracy of $\pm$15\% of reading or
 $\pm$5~mg/L, whichever is greater} \Ln{cl-accuracy}. At our concentrations (about
@@ -211,7 +208,7 @@ Change-point analysis or segmented regression of SC against distance would test 
 directly and could be recommended
 \end{comment}
 \begin{response}
-Thank you; this was a useful suggestion and we implemented it. For each single-day transect we
+This was a useful suggestion and we implemented it. For each single-day transect we
 fitted continuous piecewise-linear regressions of conductance on downstream distance with zero,
 one or two breakpoints chosen by BIC, and checked them with a penalized change-in-mean analysis
 (PELT) \Ln{m-changepoint}. The result: \mq{Segmented regression and a change-in-mean check on
@@ -224,7 +221,8 @@ abrupt step at the interpreted fault position.} \Ln{cp-contrastB} No breakpoint 
 Site~1 or on the 19~October Site~3 survey, and two marginally preferred breakpoints on the upper
 26~October transect lie away from any trace. On the lower 26~October transect (Contrast~E) the
 only breakpoint sits at the minimum segment length the method allows, about 520\,m upstream of
-the zone boundary and 123\,m from the nearest mapped trace \Ln{cp-E-min}, whose position is itself uncertain (see R2.6). Changes in conductance are thus not
+the zone boundary and 123\,m from the nearest mapped trace \Ln{cp-E-min}, whose position is itself uncertain (see R2.6). 
+Changes in conductance are thus not
 concentrated at the mapped faults in this survey, and we revised the conclusions accordingly.
 Figure~6 is new.
 \end{response}
@@ -234,10 +232,9 @@ Table 1 lacks standard deviations, degrees of freedom, confidence intervals, and
 Mann-Whitney results. I'd add that to help the reader interpret the results
 \end{comment}
 \begin{response}
-Agreed. Table~1, regenerated from the source data, now reports for each contrast the survey
-date, zone sample sizes, zone means $\pm$ standard deviation, the difference in means with its
+Table~1 now reports date, zone sample sizes, zone means $\pm$ standard deviation, the difference in means with its
 95\% confidence interval, the Welch $t$ statistic, Welch--Satterthwaite degrees of freedom,
-$p$-value, and the Mann--Whitney $U$ statistic and $p$-value. The Results introduce them:
+$p$-value, and the Mann--Whitney $U$ statistic and $p$-value for each contrast the survey. The Results introduce them:
 \mq{Table 1 gives each contrast with zone means $\pm$ SD and the number of points $n$}
 \Ln{table-intro}.
 \end{response}
@@ -247,8 +244,8 @@ The reported t values imply a Zone 3-2 standard deviation larger than the contra
 tested
 \end{comment}
 \begin{response}
-You are correct, and your observation led us to an error in our zone definitions, for which we
-apologize. Zones 3-1, 3-2 and 3-3 each combined measurements from two survey days (19 and
+You are correct, and your observation led us split the measurements within our third zone definition.
+Zones 3-1, 3-2 and 3-3 each combined measurements from two survey days (19 and
 26 October 2018). The Methods now document the offset: \mq{eleven pairs of 19 and 26 October
 points lying within 120~m of one another differ by 23.5 to 29.7~$\mu$S/cm (mean
 27.8~$\mu$S/cm), larger than any of the contrasts we test} \Ln{m-offset}. Two measurements
@@ -287,7 +284,7 @@ The z-score normalization that was presented on the Methodology has no effect on
 within-site tests
 \end{comment}
 \begin{response}
-You are correct, and thank you for catching it. All tests were carried out on specific
+Thanks for the feedback. All tests were carried out on specific
 conductance in \uScm; the normalization described in the Methods was left over from an earlier
 version of the analysis. We removed it and its equation, so the only remaining equation is the
 Welch $t$ statistic, a test of the difference in mean specific conductance \mq{in $\mu$S/cm, upstream and downstream of each feature} \Ln{m-welch}. The site maps (Figures~2--4) now colour points by specific conductance in
@@ -314,11 +311,8 @@ Some steps, such as 4.3 $\mu$S/cm at Contrast B, are close to the uncertainty of
 temperature-compensated SC
 \end{comment}
 \begin{response}
-Agreed. The Methods now state the instrument accuracy: \mq{The manufacturer gives no separate
-accuracy for the cell, whose constant is set by calibration; the compatible Orion Star meters
-specify $\pm$0.5\% of reading $\pm$1 digit, about $\pm$1.7~$\mu$S/cm at 310~$\mu$S/cm and
-$\pm$1.9~$\mu$S/cm at 360~$\mu$S/cm. A calibration offset common to all readings on a survey
-day cancels in a within-day difference between zones; random reading error does not.}
+Agreed. The Methods now state the instrument accuracy: \mq{The meters used with this cell specify an accuracy of $\pm$0.5\% of reading $\pm$1 digit, about $\pm$1.7~$\mu$S/cm at 310~$\mu$S/cm. A
+calibration offset shared by all readings on one day cancels when zones are compared within that day; random reading error does not.}
 \Ln{m-accuracy} All Site~2 measurements were taken on one day with the same instrument and a
 narrow water-temperature range (15.4--15.8\,$^\circ$C), and the within-zone standard deviations
 (1.1 and 1.9\uScm) are smaller than the 4.3\uScm\ difference. Contrast~B is about 2.5 times
