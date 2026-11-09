@@ -1,7 +1,7 @@
 \documentclass{article}
 %DIF LATEXDIFF DIFFERENCE FILE
 %DIF DEL original.tex    Mon Nov  9 15:27:43 2026
-%DIF ADD revisions.tex   Mon Nov  9 16:00:09 2026
+%DIF ADD revisions.tex   Mon Nov  9 16:06:11 2026
 
 \usepackage{arxiv}
 
@@ -448,7 +448,7 @@ Although the mean increase across the crossing is modest at 4.3}\DIFdelend \DIFa
 
 %DIF >  Tables 1 and 2 are placed here, after the Results text that cites them.
 \DIFaddend \begin{table}[htbp]
-	\caption{\DIFdelbeginFL \DIFdelFL{Two-sample }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{Within-day zone contrasts (}\DIFaddendFL Welch $t$-test \DIFdelbeginFL \DIFdelFL{results for each upstream}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{on specific conductance in $\mu$S}\DIFaddendFL /\DIFaddbeginFL \DIFaddFL{cm). Contr.: contrast; Boundary: whether the boundary between the two zones is a mapped fault or a tributary junction; Date: the single survey day used; Zones: upstream $\rightarrow$ }\DIFaddendFL downstream\DIFaddbeginFL \DIFaddFL{; $n_1, n_2$: number of points in the upstream and downstream zone ($^\dagger$ marks a }\DIFaddendFL contrast \DIFaddbeginFL \DIFaddFL{with a zone of $n < 5$); Up and Down: zone mean $\pm$ SD; $\Delta$ }[\DIFaddFL{95\% CI}]\DIFaddFL{: difference in means, downstream $-$ upstream, with the Welch 95\% confidence interval; Welch $t$ (df): test statistic with Welch--Satterthwaite degrees of freedom; $p$: two-tailed Welch $p$-value; $U$ and $p_{\mathrm{MW}}$: Mann--Whitney statistic (downstream sample) and $p$-value}\DIFaddendFL . \DIFdelbeginFL \DIFdelFL{Contrasts B }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$\Delta$ = downstream $-$ upstream; within-day comparisons only. Contrast D cannot be tested on 26 October }\DIFaddendFL and \DIFaddbeginFL \DIFaddFL{Contrast }\DIFaddendFL E \DIFaddbeginFL \DIFaddFL{cannot be tested on 19 October }\DIFaddendFL (\DIFdelbeginFL \DIFdelFL{fault crossings}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{see text}\DIFaddendFL )\DIFdelbeginFL \DIFdelFL{are significant at $\alpha = 0.05$}\DIFdelendFL . \DIFaddbeginFL \DIFaddFL{With a zone of three or four points these tests have very little power.}\DIFaddendFL }
+	\caption{\DIFdelbeginFL \DIFdelFL{Two-sample Welch $t$-test results for each upstream}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{Within-day zone contrasts in specific conductance ($\mu$S}\DIFaddendFL /\DIFdelbeginFL \DIFdelFL{downstream contrast}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{cm)}\DIFaddendFL . \DIFdelbeginFL \DIFdelFL{Contrasts B }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$\Delta$ is downstream minus upstream, with its Welch 95\% CI; $U$ }\DIFaddendFL and \DIFdelbeginFL \DIFdelFL{E (fault crossings) }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{$p_{\mathrm{MW}}$ }\DIFaddendFL are \DIFdelbeginFL \DIFdelFL{significant at $\alpha = 0.05$}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{from the Mann--Whitney test}\DIFaddendFL . \DIFaddbeginFL \DIFaddFL{$^\dagger$ marks a zone with fewer than five points.}\DIFaddendFL }
 	\centering
 	\DIFdelbeginFL %DIFDELCMD < \input{figures/table1_corrected.tex}
 %DIFDELCMD < 	%%%
@@ -459,7 +459,7 @@ Although the mean increase across the crossing is modest at 4.3}\DIFdelend \DIFa
 \end{table}
 
 \DIFaddbegin \begin{table}[htbp]
-	\caption{\DIFaddFL{Support for Table~\ref{tab:ttest}. $\hat\rho_1$: lag-1 autocorrelation of residuals from the two zone means, pooled in along-channel order (negative values set to zero); $n_{\mathrm{eff},1}$, $n_{\mathrm{eff},2}$: effective sample sizes of the upstream and downstream zone, $n_{\mathrm{eff}} = n(1-\rho)/(1+\rho)$; $p$ (Welch): nominal $p$-value; $p$ ($n_{\mathrm{eff}}$): Welch $p$-value recomputed with $n_{\mathrm{eff}}$; last two columns: median distance (m) from the zone's survey points to the nearest major road (TIGER/Line 2024 primary and secondary roads; the Taconic State Parkway is coded as a local road and is not counted). $\hat\rho_1$ is poorly determined from three to eleven points, so the adjusted $p$-values are a sensitivity check; road distances are descriptive only and were not tested.}}
+	\caption{\DIFaddFL{Autocorrelation-adjusted tests and road distances for Table~\ref{tab:ttest}. $\hat\rho_1$ is the lag-1 autocorrelation and $n_{\mathrm{eff}} = n(1-\rho)/(1+\rho)$ the effective sample size; adjusted $p$-values are a sensitivity check. Road distances are zone medians to the nearest primary or secondary road (excluding the Taconic State Parkway) and were not tested.}}
 	\centering
 	\small
 	\input{figures/table1_revised_support.tex}
