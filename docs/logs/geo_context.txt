@@ -1,0 +1,76 @@
+Major-road segments: 262 {'S1200': 259, 'S1100': 3}
+
+Nearest-road name per transect (median distance, m):
+                road_m  d_US Hwy 44  d_Rte 44  d_Rte 82  d_State Rte 82  d_Taconic State Pkwy
+transect                                                                                     
+S1               762.0       3143.0    5867.0    7637.0          2357.0                1259.0
+S2               571.0        643.0    2552.0   11315.0          8381.0                5389.0
+S3-19Oct         397.0        397.0    7855.0    2741.0          1319.0                3665.0
+S3-26Oct-upper   296.0        296.0    8544.0    2567.0          1699.0                4194.0
+S3-26Oct-lower   338.0        338.0    6300.0    3094.0           401.0                2588.0
+
+Nearest major road name (count per transect):
+transect        nearest_major_name
+S1              Covey Ln               9
+S2              Manchester Rd          2
+                US Hwy 44             16
+S3-19Oct        US Hwy 44             20
+S3-26Oct-lower  State Rte 82           5
+                US Hwy 44              7
+S3-26Oct-upper  US Hwy 44             14
+
+Per-zone, per-day median road distance (m):
+                 size  median    min    max
+zone date                                  
+1-1  2018-09-28     4   927.0  852.0  949.0
+1-2  2018-09-28     5   751.0  735.0  762.0
+2-1  2018-10-05    10   335.0   39.0  711.0
+2-2  2018-10-05     8   726.0  466.0  927.0
+3-1  2018-10-19     6   304.0  248.0  432.0
+     2018-10-26    11   245.0  177.0  439.0
+3-2  2018-10-19     3   425.0  370.0  443.0
+     2018-10-26     3   414.0  391.0  445.0
+3-3  2018-10-19    11   409.0  316.0  535.0
+     2018-10-26     6   312.0  283.0  350.0
+3-4  2018-10-26     6   368.0  286.0  390.0
+
+Sensitivity incl. Taconic by name (min of major & Taconic), per transect median:
+transect
+S1                762.0
+S2                571.0
+S3-19Oct          397.0
+S3-26Oct-lower    338.0
+S3-26Oct-upper    296.0
+
+== InFault points -> nearest digitized trace (m) ==
+      transect  field_row  dist_m  trace_m
+            S1          5   428.5     40.4
+            S1          6   513.6     53.4
+            S1          7   592.1     48.6
+            S1          8   648.5     50.2
+            S1          9   677.2     63.9
+            S2          1     0.0     86.8
+            S2          2   562.8      5.3
+            S2          3   877.9     49.4
+            S2         11  4166.2     15.5
+            S2         16  6191.1    170.2
+            S2         18  7065.9    126.2
+      S3-19Oct         10   972.5    110.6
+      S3-19Oct         11  1055.6    172.1
+      S3-19Oct         12  1175.0    240.0
+S3-26Oct-lower          7   804.4    166.4
+S3-26Oct-lower          8   929.5    279.5
+n=16  min 5  median 75  max 279
+                size  median    max
+transect                           
+S1                 5    50.0   64.0
+S2                 6    68.0  170.0
+S3-19Oct           3   172.0  240.0
+S3-26Oct-lower     2   223.0  279.0
+by paper site:
+             size    min  median    max
+paper_site                            
+1              5   40.0    50.0   64.0
+2              6    5.0    68.0  170.0
+3              5  111.0   172.0  279.0
+per field site 3 (19 Oct) only vs 26 Oct lower: see per-transect above

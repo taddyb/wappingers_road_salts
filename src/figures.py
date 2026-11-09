@@ -49,4 +49,9 @@ def chloride_figure():
 
 
 if __name__ == "__main__":
-    chloride_figure()
+    import sys
+    if "--revised" in sys.argv:  # revision round: figures/rev_chloride.png
+        import rev_figures
+        rev_figures.main(["chloride"])
+    else:
+        chloride_figure()
