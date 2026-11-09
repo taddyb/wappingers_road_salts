@@ -140,8 +140,8 @@ any subagent is dispatched. Line numbers refer to the current `revisions.tex`
   later edits must keep the strict count ≥5,500.
 - **Author block (author, 2026-11-08):** Tadd Bindas has no department: the research
   was done as an undergraduate at Marist (University). He now works at FBF
-  Engineering. Write it as affiliation "Marist University, Poughkeepsie, NY" with a
-  footnote "Present address: FBF Engineering". Keep the email. Names and order are
+  Engineering. Write it as affiliation "Marist University, Poughkeepsie, NY". No
+  present-address footnote (author removed it, 2026-11-08). Keep the email. Names and order are
   unchanged (editor rule). ORCIDs are filled in. Departments are not required by the
   editor (names, emails, affiliations only), so none are given. Tadd's Marist
   affiliation is approved by the author (the work was his Marist senior thesis).
