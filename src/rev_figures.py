@@ -418,7 +418,7 @@ def sc_colorbar(fig, ax, norm, label=r"Specific conductance ($\mu$S cm$^{-1}$)")
     return cb
 
 
-INFAULT_LABEL = "Survey point flagged in field log as just downstream of the fault"   # edit here
+INFAULT_LABEL = "Survey point just downstream of a mapped fault"   # edit here
 
 
 def common_legend(fig, first=(), extra=()):

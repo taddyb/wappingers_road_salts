@@ -369,7 +369,7 @@ def figure_sc(store):
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
     h = [Line2D([], [], marker="o", ls="", color=OI["black"], label="SC measurement"),
-         Line2D([], [], marker="o", ls="", color=OI["purple"], label="Survey point flagged in field log as just downstream of the fault"),
+         Line2D([], [], marker="o", ls="", color=OI["purple"], label="Survey point just downstream of a mapped fault"),
          Line2D([], [], color=OI["verm"], lw=2, label="Segmented fit (BIC-selected)"),
          Line2D([], [], color=OI["verm"], lw=2, ls="--", label="Best 1-breakpoint fit (not BIC-selected)"),
          Patch(color=OI["orange"], alpha=0.35, label="Breakpoint 95% bootstrap interval (tan band)"),
