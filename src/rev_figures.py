@@ -1,7 +1,7 @@
 """Revised figures for the manuscript revision (WP1).
 
 Writes NEW files only (the submitted figures used by original.tex are untouched):
-  figures/rev_overview.png   Fig 1  regional overview (a: Budnik map, b: simplified study area)
+  figures/rev_overview.png   Fig 1  regional overview (single panel; faults digitized from Budnik et al. 2010 Fig. 3.10)
   figures/rev_site1.png      Fig 2  Site 1 (Contrast A)
   figures/rev_site2.png      Fig 3  Site 2 (Contrast B), all fault-trace/channel intersections
   figures/rev_site3.png      Fig 4  Site 3 (Contrasts C, D, E), day-coded markers, fault traces,
@@ -743,20 +743,8 @@ def fig_overview():
     left, right, bottom, top = ext
     t = tidy_salinity()
     F_web, _, _ = faults_web()
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(8.3, 6.4), gridspec_kw={"width_ratios": [0.69, 0.60]})
-    img = plt.imread(FIG / "budnik_faultmap.png")
-    axL.imshow(img)
-    ih_, iw_ = img.shape[:2]
-    # single north arrow for the whole figure, directly under panel (a)'s legend box
-    axL.annotate("N", xy=(0.107 * iw_, 0.095 * ih_), xytext=(0.107 * iw_, 0.095 * ih_ + 0.11 * ih_),
-                 arrowprops=dict(arrowstyle="-|>,head_width=0.5,head_length=0.9", color="black", lw=3),
-                 ha="center", va="top", fontsize=15, fontweight="bold", annotation_clip=False)
-    axL.set_axis_off()
-    axL.set_title("(a) Budnik et al. (2010) fault map", fontsize=10)
-    axL.text(0.5, -0.02, "Taken directly from Budnik, Walker & Menking (2010), Fig. 3.10,\n"
-             "Natural Resource Inventory of Dutchess County, NY.", transform=axL.transAxes, ha="center",
-             va="top", fontsize=7, color="0.3")
-    ax = axR
+    # Single panel (the reproduced Budnik et al. page was dropped; faults are digitized from their Fig. 3.10)
+    fig, ax = plt.subplots(figsize=(5.4, 7.0))
     ax.set_xlim(left, right); ax.set_ylim(bottom, top); ax.set_aspect("equal")
     ax.set_xticks([]); ax.set_yticks([])
     add_basemap_safe(ax, source=BASE)
@@ -832,8 +820,10 @@ def fig_overview():
     lab = ["High-angle fault (Budnik et al. 2010)", "Wappinger Creek", "Other major streams",
            "Major highway", "Study site", WWTP_LABEL] + [e[1] for e in route_entries({"I", "US", "NY"})]
     ax.legend(h, lab, loc="upper center", bbox_to_anchor=(0.5, -0.012), ncol=3, fontsize=6.5, frameon=False, columnspacing=1.0, handlelength=1.6, handler_map={RouteKey: HandlerRoute()})
-    ax.set_title("(b) Study area: faults, highways and streams", fontsize=10)
-    fig.subplots_adjust(left=0.0, right=0.995, top=0.95, bottom=0.07, wspace=0.01)
+    ax.annotate("N", xy=(0.07, 0.86), xytext=(0.07, 0.97), xycoords="axes fraction", textcoords="axes fraction",
+                arrowprops=dict(arrowstyle="<|-,head_width=0.5,head_length=0.9", color="black", lw=3),
+                ha="center", va="top", fontsize=15, fontweight="bold", zorder=12)
+    fig.subplots_adjust(left=0.0, right=1.0, top=0.99, bottom=0.07)
     out = FIG / "rev_overview.png"
     fig.savefig(out, dpi=DPI, bbox_inches="tight")
     plt.close(fig)
