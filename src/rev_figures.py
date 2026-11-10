@@ -6,7 +6,7 @@ Writes NEW files only (the submitted figures used by original.tex are untouched)
   figures/rev_site2.png      Fig 3  Site 2 (Contrast B), all fault-trace/channel intersections
   figures/rev_site3.png      Fig 4  Site 3 (Contrasts C, D, E), day-coded markers, fault traces,
                                     Z-Z' chloride line, inset resolving 19/26 Oct overlap
-  figures/rev_chloride.png   Fig 5  chloride along Z -> Z' with segmented fit, flagged survey points and trace crossing
+  figures/rev_chloride.png   Fig 5  chloride along Z -> Z' with segmented fit, fault points and trace crossing
 
 Run:  .venv/bin/python src/rev_figures.py        (or maps.py --revised / figures.py --revised)
 Needs internet for basemap tiles.  Every plotted value comes from data/ via
@@ -873,7 +873,7 @@ def fig_chloride():
     for k, col in (("D", OI["purple"]), ("E", OI["purple"])):
         for x in pos[k]:
             ax.plot([x, x], [0, ymax * 0.07], color=col, lw=2.4, zorder=5, solid_capstyle="butt")
-        ax.annotate(f"{k} flagged\npoints", (np.mean(pos[k]), ymax * 0.075), xytext=(0, 5), textcoords="offset points",
+        ax.annotate(f"{k} fault\npoints", (np.mean(pos[k]), ymax * 0.075), xytext=(0, 5), textcoords="offset points",
                     ha="center", va="bottom", fontsize=7.5, color="#8a3f6d", fontweight="bold", zorder=6)
     for x in cross:
         ax.plot([x], [0], marker="X", ms=7, mfc="#bbbbbb", mec="#666666", mew=0.6, clip_on=False, zorder=7)
@@ -890,7 +890,7 @@ def fig_chloride():
     h = [Line2D([], [], marker="o", ls="", color="k", label="Chloride sample (20 Jul 2020)"),
          Line2D([], [], color=OI["verm"], lw=2.2, label=f"Segmented regression (1 breakpoint, BIC), at {bp:.0f} m"),
          Patch(fc=OI["orange"], alpha=0.30, label=f"Breakpoint 95% bootstrap interval ({blo:.0f}\u2013{bhi:.0f} m)"),
-         Line2D([], [], color=OI["purple"], lw=2.4, label="Survey points flagged as just downstream of the fault (D, E), projected onto path"),
+         Line2D([], [], color=OI["purple"], lw=2.4, label="Fault points at Contrasts D and E (survey points downstream of a fault), projected onto path"),
          Line2D([], [], marker="X", ls="", mfc="#bbbbbb", mec="#666666", ms=7, label="Digitized county-map fault trace crosses survey line (approximate)")]
     ax.legend(handles=h, loc="upper center", fontsize=7, frameon=False, ncol=2, bbox_to_anchor=(0.5, -0.17))
     fig.tight_layout()

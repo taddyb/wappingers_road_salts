@@ -307,7 +307,7 @@ def main():
 OI = dict(black="#000000", orange="#E69F00", sky="#56B4E9", green="#009E73", yellow="#F0E442",
           blue="#0072B2", verm="#D55E00", purple="#CC79A7")
 TITLES = {"S1": "Site 1, 28 Sep 2018", "S2": "Site 2, 5 Oct 2018", "S3-19Oct": "Site 3, 19 Oct 2018",
-          "S3-26Oct-upper": "Site 3 upper (field site 5), 26 Oct 2018", "S3-26Oct-lower": "Site 3 lower (field site 4), 26 Oct 2018"}
+          "S3-26Oct-upper": "Site 3 upper, 26 Oct 2018", "S3-26Oct-lower": "Site 3 lower, 26 Oct 2018"}
 
 
 def draw_fit(ax, d, y, a, color=OI["verm"]):
@@ -315,7 +315,8 @@ def draw_fit(ax, d, y, a, color=OI["verm"]):
     if a["rep"]:
         ax.plot(xs, design(xs, a["fit_bps"]) @ a["beta"], color=color, lw=2,
                 ls="-" if a["sel"] > 0 else "--", zorder=3)
-        for j, b in enumerate(a["fit_bps"]):
+        # breakpoint line and bootstrap band only where BIC selects a breakpoint
+        for j, b in enumerate(a["fit_bps"] if a["sel"] > 0 else ()):
             lo, hi = a["boot_int"][j]
             ax.axvspan(lo, hi, color=OI["orange"], alpha=0.25, lw=0, zorder=1)
             ax.axvline(b, color=color, lw=1.2, zorder=2)
@@ -371,10 +372,9 @@ def figure_sc(store):
     h = [Line2D([], [], marker="o", ls="", color=OI["black"], label="SC measurement"),
          Line2D([], [], marker="o", ls="", color=OI["purple"], label="Fault point (survey point downstream of a fault)"),
          Line2D([], [], color=OI["verm"], lw=2, label="Segmented fit (BIC-selected)"),
-         Line2D([], [], color=OI["verm"], lw=2, ls="--", label="Best 1-breakpoint fit (not BIC-selected)"),
-         Patch(color=OI["orange"], alpha=0.35, label="Breakpoint 95% bootstrap interval (tan band)"),
-         Line2D([], [], color="none", label="Zone labels in boxes; zone ends at boundary lines"),
-         Line2D([], [], marker="^", ls="", color=OI["blue"], label="PELT change-in-mean"),
+         Line2D([], [], color=OI["verm"], lw=2, ls="--", label="Best 1-breakpoint fit where none is selected"),
+         Patch(color=OI["orange"], alpha=0.35, label="Breakpoint 95% bootstrap interval (selected breakpoints only)"),
+         Line2D([], [], marker="^", ls="", color=OI["blue"], label="Change-in-mean shift (PELT)"),
          Line2D([], [], color=OI["green"], ls="--", lw=1.6, label="Tributary junction (zone boundary)"),
          Line2D([], [], color="#888888", ls=":", lw=1.2, label="Zone boundary (field-interpreted fault; contrasts B, D, E)"),
          Line2D([], [], marker="X", ls="", color="#bbbbbb", mec="#666666", ms=6, label="Digitized county-map fault trace crosses survey line (approximate)")]
@@ -395,7 +395,7 @@ def figure_cl(c, a, fc, ck, faults):
     for (nm, pos, off), col, lab in zip(ck, (OI["purple"], OI["purple"]), ("D", "E")):
         for i, x in enumerate(pos):
             ax.axvline(x, color=col, lw=1.2, ls="-", alpha=0.7, zorder=2)
-        ax.text(np.mean(pos), 0.95, f"Contrast {lab}\nflagged points", transform=ax.get_xaxis_transform(), ha="center", va="top",
+        ax.text(np.mean(pos), 0.95, f"Contrast {lab}\nfault points", transform=ax.get_xaxis_transform(), ha="center", va="top",
                 fontsize=8, color=col, bbox=dict(fc="white", ec="none", alpha=0.8, pad=1))
     for x in fc["trace_cross"]:
         ax.plot([x], [0], marker="X", color="#bbbbbb", mec="#666666", mew=0.5, ms=7, clip_on=False, zorder=6)
@@ -414,8 +414,8 @@ def figure_cl(c, a, fc, ck, faults):
     h = [Line2D([], [], marker="o", ls="", color="k", label="Chloride sample"),
          Line2D([], [], color=OI["verm"], lw=2, ls="-" if a["sel"] else "--", label="Segmented fit" if a["sel"] else "Best 1-bp fit (not BIC-selected)"),
          Patch(color=OI["orange"], alpha=0.35, label="Breakpoint 95% bootstrap"),
-         Line2D([], [], marker="^", ls="", color=OI["blue"], label="PELT change-in-mean"),
-         Line2D([], [], color=OI["purple"], lw=1.2, label="Survey points flagged as just downstream of the fault (SC survey), projected on path"),
+         Line2D([], [], marker="^", ls="", color=OI["blue"], label="Change-in-mean shift (PELT)"),
+         Line2D([], [], color=OI["purple"], lw=1.2, label="Fault points (survey points downstream of a fault), projected on path"),
          ]
     if fc["trace_cross"]:
         h.append(Line2D([], [], marker="X", ls="", color="#bbbbbb", mec="#666666", ms=7, label="Digitized county-map fault trace crosses survey line (approximate)"))
