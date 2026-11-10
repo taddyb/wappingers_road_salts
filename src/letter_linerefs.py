@@ -36,6 +36,15 @@ def main():
                        cwd=ROOT, stdout=fh, check=True,
                        stderr=subprocess.DEVNULL)
 
+    # latexdiff turns a deleted numbered equation into an unnumbered displaymath and
+    # comments out its \label, so struck-out text that refers to it prints "??".
+    # Restore it as a numbered equation that keeps its label.
+    diff = DIFF.read_text()
+    diff = re.sub(r"\\begin\{displaymath\}(\s*\\DIFdel\{.*?)\s*%DIFDELCMD < \\label\{([^}]+)\}%%%\n\}\\end\{displaymath\}",
+                  lambda m: "\\begin{equation}" + m.group(1) + "}\\label{" + m.group(2) + "}\n\\end{equation}",
+                  diff, flags=re.S)
+    DIFF.write_text(diff)
+
     subprocess.run(["tectonic", "--keep-intermediates", "revisions_diff.tex"],
                    cwd=ROOT, check=True, capture_output=True)
 
