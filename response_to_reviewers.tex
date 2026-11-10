@@ -13,20 +13,13 @@
 % Point-by-point response to reviewers
 %   \reviewer{N} / \editor   start a reviewer's (or the editor's) comments
 %   comment   environment    reviewer text, verbatim
-%   response  environment    our reply (draft until analysis is done)
+%   response  environment    our reply
 %   \mq{...}                 verbatim quote of new manuscript text
 %   \Ln{key}                 line number {L123} in revisions_diff.pdf
-%   \plan{...}               INTERNAL planning note -- delete before submission
-%   \tbd{...}                text pending author input
 % Comment labels are given explicitly and follow the reviewers' numbering.
-% Set \showplanfalse to hide every planning note for the submitted version.
 % ---------------------------------------------------------------------------
 \definecolor{commentcolor}{RGB}{90,90,90}
-\definecolor{plancolor}{RGB}{200,90,0}
 
-\newif\ifshowplan \showplanfalse
-\newcommand{\plan}[1]{\ifshowplan\par\noindent{\color{plancolor}\small\textbf{[PLAN]} #1}\par\fi}
-\newcommand{\tbd}[1]{{\color{plancolor}\textbf{[TBD: #1]}}}
 \newcommand{\uScm}{\,$\mu$S\,cm$^{-1}$}
 
 \newcommand{\reviewer}[1]{\section*{Response to Reviewer #1}}
