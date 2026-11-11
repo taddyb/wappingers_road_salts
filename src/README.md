@@ -2,7 +2,7 @@
 
 Reproducible statistics and figures for the Wappingers Creek fault-salinity
 paper. Everything here reads from `../data/` and writes into `../figures/`,
-which `../main.tex` includes.
+which `../original.tex` (submitted) and `../revisions.tex` (revised) include.
 
 ## Setup
 
@@ -55,12 +55,17 @@ describes), and reports a Mann-Whitney $U$ test as a nonparametric check. It
 also fixes a row-index bug that double-counted one measurement between Zones
 3-3 and 3-4.
 
-Result: the two clean fault crossings (Contrasts B and E) remain significant
-at $p < 0.001$; the weaker fault crossing (D) and the two tributary-confounded
-contrasts (A, C) are not significant. The paper's central claim — significant
-salinity increases at fault crossings — is unchanged and now rests on a
-defensible test. The `pub. t` column in `stats.py`'s output reproduces the
-original published $t$ values exactly, so the correction is auditable.
+Result for the submitted manuscript (`original.tex`): Contrasts B and E were
+significant at $p < 0.001$; D, A and C were not. The `pub. t` column in
+`stats.py`'s output reproduces the original published $t$ values exactly, so
+the correction is auditable.
+
+**Superseded in revision round 1.** The submitted analysis pooled the two
+Site 3 survey days, which differ by about 28 µS/cm. `within_day.py` compares
+zones within a single survey day only: Contrast E becomes +1.6 µS/cm
+($p = 0.090$, not significant), so only Contrast B (one of three fault
+contrasts) shows a significant increase. The revised manuscript
+(`revisions.tex`) reports these within-day results.
 
 ## Faults
 

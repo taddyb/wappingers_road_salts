@@ -50,7 +50,7 @@ STREAM = OI["blue"]
 WATER = "#b9dcf1"   # Hudson River fill: light water blue, same family as the streams
 ROAD = "#555555"
 FAULT_LABEL = "High-angle fault, county-scale map (Budnik et al. 2010; approximate)"
-KIND = {"A": "tributary", "B": "fault zone", "C": "tributary", "D": "fault zone", "E": "fault zone"}
+KIND = {"A": "tributary", "B": "fault", "C": "tributary", "D": "fault", "E": "fault"}
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8, "axes.labelsize": 8,
                      "legend.fontsize": 7, "savefig.dpi": DPI})
@@ -625,8 +625,8 @@ def _site3(ts, stats, norm, F_web, band_web, F_m, lat0):
     mE, tE = boundary_tick(t26l, "3-3", "3-4")
     mC2, tC2 = boundary_tick(t26u, "3-1", "3-2")
     draw_contrast(ax, mC, tC, "C", "tributary", lat0, "\n(19 & 26 Oct)", ground_half=130, lab_dir=1, lab_pts=(10, 50))
-    draw_contrast(ax, mD, tD, "D", "fault zone", lat0, "\n(19 Oct only)", ground_half=130, lab_dir=1, lab_pts=(-95, 20))
-    draw_contrast(ax, mE, tE, "E", "fault zone", lat0, "\n(26 Oct only)", ground_half=130, lab_dir=-1, lab_pts=(-25, 55))
+    draw_contrast(ax, mD, tD, "D", "fault", lat0, "\n(19 Oct only)", ground_half=130, lab_dir=1, lab_pts=(-95, 20))
+    draw_contrast(ax, mE, tE, "E", "fault", lat0, "\n(26 Oct only)", ground_half=130, lab_dir=-1, lab_pts=(-25, 55))
     flow_arrow(ax, t19, 0.63, 0.74, lat0, side_m=90, label_off=(0, -14))
     # zone ids with leaders
     zone_box(ax, "Zone 3-3", zone_centroid(t19, "3-3"), (-70, 18))
